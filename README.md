@@ -1,7 +1,8 @@
 # laguna
 Laguna is transparent caching control plane providing IP/MPLS traffic monitoring &amp; analysis, cache definition management &amp; traffic matching.
-
+<p>
 OVERVIEW
+</p>
 Laguna is part of a larger solution, consisting of the following open source projects:
 
 Laguna
