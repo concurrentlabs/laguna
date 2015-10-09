@@ -1,5 +1,5 @@
 # laguna
-Coming soon
+Coming soon...
 <p>
 
 
