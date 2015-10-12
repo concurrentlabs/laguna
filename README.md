@@ -9,7 +9,7 @@ Service providers and enterprises are facing a large and growing amount of over-
 The Laguna transparent caching solution helps service providers better manage network utilization by transparently caching popular Internet content within the service provider’s network. Once content is cached, consumer requests can be fulfilled using local server resources rather than accessing data through the Internet peering point. For the service provider, this reduces congestion on the IP network, lowers peering costs, and provides improved control over network utilization during peak usage periods. From a consumer perspective, transparent caching improves the quality and performance of OTT streaming services.
 
 
-Laguna is part of an open source transparent caching solution, consisting of the following open source projects:
+The overall solution consists of the following open source projects:
 
 Laguna
 
