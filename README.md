@@ -52,13 +52,13 @@ The Transparent Caching Solution is composed of the following components:
 <b>
 1)	Laguna
 </b>
-<li>a.	Integrates with the data network via optical tap or mirrored switch port provided by the operator.  Supports IP networks and MPLS networks.
+<li>Integrates with the data network via optical tap or mirrored switch port provided by the operator.  Supports IP networks and MPLS networks.
 </li>
 <li>
-b.	Monitors and analyses data traffic
+Monitors and analyses data traffic
 </li>
 <li>
-c.	Intercepts traffic based upon configurable algorithms and cache definition policies
+Intercepts traffic based upon configurable algorithms and cache definition policies
 </li>
 </p>
 <p>
@@ -70,10 +70,10 @@ c.	Intercepts traffic based upon configurable algorithms and cache definition po
 a.	Traffic Operations
 </b>
 <li>
-i.	Provides web-based UI and configuration capabilities for the system
+Provides web-based UI and configuration capabilities for the system
 </li>
 <li>
-ii.	Centralized operational platform, providing graphs and dashboards of system activity
+Centralized operational platform, providing graphs and dashboards of system activity
 </li>
 </p>
 <p>
@@ -81,16 +81,16 @@ ii.	Centralized operational platform, providing graphs and dashboards of system 
 b.	Traffic Monitor
 </b>
 <li>
-i.	Monitors edge caches and overall health of the system
+Monitors edge caches and overall health of the system
 </li>
 <p><b>
 c.	Traffic Router
 </b></p>
 <li>
-i.	Receives client requests for content
+Receives client requests for content
 </li>
 <li>
-ii.	Redirects to an available edge cache in the client’s area
+Redirects to an available edge cache in the client’s area
 </li>
 </p>
 <p>
@@ -98,13 +98,13 @@ ii.	Redirects to an available edge cache in the client’s area
 3)	Traffic Server Edge Cache
 </b>
 <li>
-a.	Apache Traffic Server (ATS) instance
+Apache Traffic Server (ATS) instance
 </li>
 <li>
-b.	Services client HTTP requests
+Services client HTTP requests
 </li>
 <li>
-c.	Caches internet-sourced content
+Caches internet-sourced content
 </li>
 </p>
 <p>
