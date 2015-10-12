@@ -55,7 +55,7 @@ Traffic Server
 
 *Total Transparency*
 
-> The Laguna solution operates transparently to preserve the application logic of the client and source website. Authentication, statistics, and advertising are all preserved and no changes are needed for websites or clients to work with Concurrent’s OTT content caching features.
+> The Laguna solution operates transparently to preserve the application logic of the client and source website. Authentication, statistics, and advertising are all preserved and no changes are needed for websites or clients to work with the OTT content caching features.
 
 
 *Cost Savings*
@@ -108,3 +108,5 @@ The Transparent Caching Solution is composed of the following components:
 - Apache Traffic Server (ATS) instance
 - Services client HTTP requests
 - Caches internet-sourced content
+
+
