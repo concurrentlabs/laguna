@@ -65,9 +65,10 @@ c.	Intercepts traffic based upon configurable algorithms and cache definition po
 <b>
 2)	Traffic Control: Consists of three main components
 </b>
-<li>
+</p>
+<b>
 a.	Traffic Operations
-</li>
+</b>
 <li>
 i.	Provides web-based UI and configuration capabilities for the system
 </li>
@@ -82,9 +83,9 @@ b.	Traffic Monitor
 <li>
 i.	Monitors edge caches and overall health of the system
 </li>
-<li>
+<p><b>
 c.	Traffic Router
-</li>
+</b></p>
 <li>
 i.	Receives client requests for content
 </li>
