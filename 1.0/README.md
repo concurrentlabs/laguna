@@ -1,4 +1,4 @@
-# Transparent Caching Server Control Plane V1.4 #
+# Transparent Caching Server Control Plane V1.0 #
 
 These notes provide instructions on howto download and install the Laguna Transparent Caching Server Control Plane on 64-bit Linux CentOS-7 systems. Ensure at least the *Compatibility libraries* and *Development Tools* group of packages are available on the build server, in addition others may be required--use *yum* to resolve these package dependencies.
 
