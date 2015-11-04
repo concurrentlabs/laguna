@@ -1,0 +1,461 @@
+# TV-VOD  Edge lighttpd configuration file
+#
+#############################################################################
+## modules to load
+# This is the recommended set of modules to load.
+# Additional modules may be added to this list but care should be taken 
+# to avoid impacting the operation or performance of the edge.
+
+server.modules              = (
+                                "mod_tcs",
+                                "mod_ccur_uri_validation",
+                                "mod_rewrite",
+                                "mod_redirect",
+                                "mod_alias",
+                                "mod_access",
+                                "mod_auth",
+                                "mod_status",
+                                "mod_setenv",
+                                "mod_mhstore_cache",
+                                "mod_tcs_filter",
+                                "mod_proxy_core",
+                                "mod_proxy_backend_http",
+                                "mod_usertrack",
+                                "mod_expire",
+                                "mod_accesslog")
+
+## a static document-root, for virtual-hosting take look at the
+## server.virtual-* options
+server.document-root        = "/var/lib/MediaHawk/Edge/webroot/"
+
+## where to send error-messages to
+server.errorlog             = "/var/log/mhue_error.log"
+#server.errorlog             = "/dev/null"
+
+## generate core files
+server.core-files           = "enable"
+
+# files to check for if .../ is requested
+index-file.names            = ( "index.php", "index.html",
+                                "index.htm", "default.htm" )
+
+## set the event-handler
+#server.event-handler = "linux-sysepoll"
+server.event-handler = "select"
+
+## send a different Server: header
+## be nice and keep it at lighttpd
+server.tag                 = "MediaHawk mhue lighttpd"
+
+#default output method
+#server.network-backend = "writev"
+server.network-backend = "linux-mediahawk-aio"
+server.use-noatime = "enable"
+
+server.max-read-threads = 16
+server.max-stat-threads =  32
+server.max-worker = 8
+
+server.max-keep-alive-requests = 16
+server.max-keep-alive-idle = 20
+server.max-read-idle = 60
+server.max-write-idle = 60
+server.max-fds = 64511
+
+server.stat-cache-engine = "fam"   # either fam, simple or disabled
+
+#### accesslog module
+accesslog.filename          = "/var/log/mhue_access.log"
+#accesslog.filename          = "/dev/null"
+
+######### Options that are good to be but not neccesary to be changed #######
+
+## bind to port (default: 80)
+#server.port                = 81
+
+## bind to cache manager service port (default: 8040)
+#cachemanager.port          = 8040
+
+## to help the rc.scripts
+server.pid-file            = "/var/run/mhue.pid"
+
+## enable debugging
+debug.log-request-header     = "enable"
+debug.log-response-header    = "enable"
+debug.log-request-handling   = "enable"
+#debug.log-file-not-found     = "enable"
+#debug.log-condition-handling = "enable"
+debug.log-timeouts           = "enable"
+
+#
+### only root can use these options
+#
+# chroot() to directory (default: no chroot() )
+#server.chroot              = "/"
+
+## change uid to <uid> (default: don't care)
+#server.username            = "wwwrun"
+
+## change uid to <uid> (default: don't care)
+#server.groupname           = "wwwrun"
+
+##
+### CCUR URI validation
+#
+## If a URL path matches one of these patterns
+## it will be validated
+# 
+##ccur-uri-validation.patterns        = (
+#        "/media(/[^/]*)*/Manifest$",
+#        "/media/([^/]*/)*[^.]+\.(f4m|m3u8)$"
+#      )
+#
+## Set to enable to enforce signature expiration
+#
+#ccur-uri-validation.verify-end-date = "enable"
+## Key must match the key used by the signing agent
+#ccur-uri-validation.key             = "1a1287fe9892620bc123d1419580af21"
+
+#
+## Proxy definitions
+## These are used to define default Origins, and alternate Origins to provide resilience
+#
+## Note that these conditions are processed in reverse order, so the most
+## restrictive conditions should appear last.
+#
+####################################################
+##                                                 #
+##        Default Proxy Settings                   #
+##                                                 #
+## The following are the default proxy settings to #
+## support HTTP ABR streaming via a MediaGateway   #
+## and VOD streaming via an Origin Controller.     #
+##                                                 #
+####################################################
+##
+####################################################
+##                                                 #
+##        HTTP ABR settings                        #
+##                                                 #
+####################################################
+##
+#$HTTP["url"] =~ "^.*$" {
+##
+## This conditional matches all URLs, and so is the
+## default, least restrictive conditional block.
+## The proxy will forward each request to one of the
+## backends in the list, each of which should be 
+## a server, such as a MediaGateway, capable of
+## servicing HTTP ABR requests.
+##
+#	proxy-core.protocol = "http"
+#	proxy-core.balancer = "static"
+#	proxy-core.backends = ( "10.75.34.50:8080" )
+#	proxy-core.backends = ( "origin-server1.xyz.com", "origin-server2.xyz.com" )
+#	proxy-core.max-pool-size = 1024
+#	proxy-core.max-keep-alive-requests = 1024
+#	proxy-core.max-backlog-size = 64
+#	proxy-core.backend-is-proxy = "disable"
+#	proxy-core.backend-is-proxy = "enable"
+#	proxy-core.forward-request = "disable"
+#	proxy-core.follow-redirect = "enable"
+#}
+##
+#$HTTP["url"] =~ "^/MHawk/" {
+##
+## This conditional matches URLs which have a path
+## which starts with "/MHawk/".  These are HTTP ABR
+## requests where the URL is obtained from a redirect
+## of an HTTP ABR request by a MediaGateway.  Each
+## request is sent to the host specified in the request.
+##
+#	proxy-core.protocol = "http"
+#	proxy-core.balancer = "static"
+#	proxy-core.backends = ( )
+#	proxy-core.max-pool-size = 1024
+#	proxy-core.max-keep-alive-requests = 1024
+#	proxy-core.max-backlog-size = 64
+#	proxy-core.backend-is-proxy = "disable"
+#	proxy-core.forward-request = "enable"
+#	proxy-core.follow-redirect = "disable"
+#}
+##
+####################################################
+##                                                 #
+##        VOD (CDN Assist) Settings                #
+##                                                 #
+####################################################
+##
+#$HTTP["url"] =~ "^/atis.ccur.com/" {
+##
+## This conditional matches URLs which have a path
+## which starts with "/atis.ccur.com/".  These are ATIS C2
+## transfer requests where the URL is obtained from a redirect
+## of an ATIS C2 locate request by an origin controller.
+## Each request is sent to the host specified in the request.
+## This setting is intended for use with the VOD Proxy
+## Redirector capability.
+##
+#	proxy-core.protocol = "http"
+#	proxy-core.balancer = "static"
+#	proxy-core.backends = ( )
+#	proxy-core.backend-is-proxy = "disable"
+#	proxy-core.forward-request = "enable"
+#	proxy-core.follow-redirect = "disable"
+#}
+##
+#$HTTP["host"] =~ "\:8071$" {
+##
+## This conditional matches URLs which have a host
+## port of 8071.  These are ATIS C2 requests and
+## need to be directed to an Origin Controller.
+## The backends should include a primary Origin
+## Controller (the first in the list) and up to
+## 63 backup Origin Controllers.  Any redirect
+## produced by an Origin Controller is passed
+## back to the ATIS C2 client.  The client might send
+## that redirected URL back through the proxy
+## were it will match the "atis.ccur.com" conditional
+## above and so will be sent to the host specified
+## in the request.  This setting is intended for
+## use with the VOD Proxy Redirector capability.
+##
+#	proxy-core.protocol = "http"
+#	proxy-core.balancer = "static"
+#	proxy-core.backends = ( "controller1.xyz.com:8071", "controller2.xyz.com:8071" )
+#	proxy-core.backend-is-proxy = "disable"
+#	proxy-core.forward-request = "disable"
+#	proxy-core.follow-redirect = "disable"
+#	proxy-core.backup-max-age = 300
+#}
+##
+#$HTTP["host"] =~ "\:8043$" {
+##
+## This conditional matches URLs which have a host
+## port of 8043.  These are NGOD C2 requests and
+## need to be directed to an Origin Controller.
+## The backends should include a primary Origin
+## Controller (the first in the list) and up to
+## 63 backup Origin Controllers.  This setting is
+## intended for use with the VOD Proxy Redirector
+## capability.
+##
+#	proxy-core.protocol = "http"
+#	proxy-core.balancer = "static"
+#	proxy-core.backends = ( "controller1.xyz.com:8043", "controller2.xyz.com:8043" )
+#	proxy-core.backend-is-proxy = "disable"
+#	proxy-core.forward-request = "disable"
+#	proxy-core.follow-redirect = "disable"
+#	proxy-core.backup-max-age = 300
+#}
+##
+#
+#access policies stored within edge server 
+#to allow content to be served to the clients.
+#default access policies are stored within edge server root folder
+#(/var/lib/MediaHawk/Edge/webroot/), which is cached whenever the 
+#client asks the policy for the first time.
+$HTTP["url"] =~ "^/(?i)(crossdomain.xml)$" {
+    setenv.add-response-header = (
+          "Content-Type" => "text/x-cross-domain-policy",
+           "X-Content-Type-Options" => "nosniff"
+    )
+}
+$HTTP["url"] =~ "^/(?i)(clientaccesspolicy.xml)$" {
+    setenv.add-response-header = (
+          "Content-Type" => "text/x-cross-domain-policy",
+           "X-Content-Type-Options" => "nosniff"
+    )
+}
+
+### Transparent Cache Filter options
+#
+## If a URL path matches one of these patterns the request will be considered
+## to be from a transparent cache redirect. The regular expressions use named
+## sub-expressions, for example "?P<Host>", that are used to find the 
+## interesting bits about the request. The named sub-expressions recognized by
+## the transparent cache filter are as follows:
+##
+##     %P<Site>			- the "parent" path used in building the cache key
+##                        that is used for the name of the cached object.
+##                        This is an optional value.  If not present the
+##                        default value is "/ccur/item/default".
+##     %P<Host>         - the origin server host name or IP. This is a
+##                        required value.  If not present the regular
+##                        expression will be skipped.
+##     %P<Signature>    - the origin server URL.  This is a required
+##                        value.  If not present the regular expression
+##                        will be skipped.
+##     %P<KeyId>        - identifier used in building the cache key that
+##                        is used for the name of the cached object.  This
+##                        is an optional value.  If not present, the
+##                        %P<Signature> value is used to obtain the key ID.
+##     %P<KeyMisc>      - extra information used in building the cache
+##                        key.  This is an optional value.  If not present,
+##                        the default value is "/0".
+##     %P<Options>      - user-defined value used to communicate optional
+##                        behavior to the transparent cache filter.  This
+##                        is an optional value.  If not present, the default
+##                        value is "cache".  The transparenet cache filter
+##                        recognizes "cache", which means that the response
+##                        from the origin is to be cached if allowed by the
+##                        cache control settings; and "no-cache", which means
+##                        that the response from the origin is not to be cached
+##                        regardless of any other cache control settings.
+##
+## For an introduction to building regular expressions, try "man pcrepattern". 
+##
+## Note: multiple patterns are separated by a comma and are normally placed
+## on separate lines.
+#
+#transparent-cache.patterns example:
+#- Last entry describes cache purge pattern
+#- tcsopt/(?P<Options>[^/]+)/ describes generic pattern where the entire cache key is being extracted by control plane.
+#- tcsopt/ntflx-(?P<Options>[^-]+-[^-]+-\d+_\d+)/describes specific netflix pattern where the cache key is being extracted by edge. 
+#In this case, cache key id and range are being extracted by edge (not passed from control plane) while additional cache key 
+#information as part of cache key miscellaneous is passed from control plane if any exists. Please refer to control plane configuration 
+#documentation for config.yaml for details on how to configure the service options under “/services/options”.
+#The patterns are matched and executed top to bottom. It is highly recommended that the generic pattern is placed last on the list.
+transparent-cache.patterns = (
+        "(?P<Site>^/ccur(/[^/]*)/(?P<Service>[^/]*))/tcshost/(?P<Host>[^/]+)/tcskey(?P<KeyId>/[^/]+)(?P<KeyMisc>(/[^/]+)+)/tcsopt/ytb-(?P<Options>[^-]+-[^-]+-\d+_\d+)/tcsosig(?P<Signature>[^\?]*\?([^&]*&)*range=(?P<Range>\d+-\d+|\d+-|-\d+)&*.*)$",
+        "(?P<Site>^/ccur(/[^/]*)/(?P<Service>[^/]*))/tcshost/(?P<Host>[^/]+)/tcskey(?P<KeyId>/[^/]+)(?P<KeyMisc>(/[^/]+)+)/tcsopt/ytb-(?P<Options>[^-]+-[^-]+-\d+_\d+)/tcsosig(?P<Signature>.+)$",
+        "(?P<Site>^/ccur(/[^/]*)/(?P<Service>[^/]*))/tcshost/(?P<Host>[^/]+)/tcskey(?P<KeyId>/[^/]+)(?P<KeyMisc>(/[^/]+)+)/tcsopt/ntflx-(?P<Options>[^-]+-[^-]+-\d+_\d+)/tcsosig(?P<Signature>/video/ntflx/(/+range|/*)(?P<Range>[^?]*).+)$",
+        "(?P<Site>^/ccur(/[^/]*)/(?P<Service>[^/]*))/tcshost/(?P<Host>[^/]+)/tcskey/.*?tcsopt/mss-(?P<Options>[^/]+)/tcsosig(?P<Signature>/[^/]+/[^/]+/(?P<KeyId>.*?\.ism)(?P<KeyMisc>/QualityLevels\(.*?\)/Fragments\(.*).*)",
+        "(?P<Site>^/ccur(/[^/]*)/(?P<Service>[^/]*))/tcshost/(?P<Host>[^/]+)/tcskey/.*?tcsopt/ts-(?P<Options>[^/]+)/tcsosig(?P<Signature>/[^/]+/[^/]+/(?P<KeyId>/([^/]+)/([^/]+))(?P<KeyMisc>/(.*?\.ts).*).*)",
+        "(?P<Site>^/ccur(/[^/]*)/(?P<Service>[^/]*))/tcshost/(?P<Host>[^/]+)/tcskey(?P<KeyId>/[^/]+)(?P<KeyMisc>(/[^/]+)+)/tcsopt/(?P<Options>[^/]+)/tcsosig(?P<Signature>/.+)$",
+        "^/tcspurge(?P<PurgeKey>/.+)"
+)
+
+#transparent-cache.patterns = (
+#        "(?P<Site>^/ccur(/[^/]*)/(?P<Service>[^/]*))/tcshost/(?P<Host>[^/]+)/tcskey/(?P<KeyId>[^/]+)/(?P<Range>[^_]+)_(?P<KeyMisc>[^/]+)/tcsopt/ytb-(?P<Options>[^-]+-[^-]+-\d+_\d+)/tcsosig(?P<Signature>.+)$",
+#         "(?P<Site>^/ccur(/[^/]*)/(?P<Service>[^/]*))/tcshost/(?P<Host>[^/]+)/tcskey(?P<KeyId>/[^/]+)(?P<KeyMisc>(/[^/]+)+)/tcsopt/ytb-(?P<Options>[^-]+-[^-]+-\d+_\d+)/tcsosig(?P<Signature>.+)$",
+#        "(?P<Site>^/ccur(/[^/]*)/(?P<Service>[^/]*))/tcshost/(?P<Host>[^/]+)/tcskey(?P<KeyId>/[^/]+)(?P<KeyMisc>(/[^/]+)+)/tcsopt/ntflx-(?P<Options>[^-]+-[^-]+-\d+_\d+)/tcsosig(?P<Signature>(/+range|/*)(?P<Range>[^?]*).+)$",
+#        "(?P<Site>^/ccur(/[^/]*)/(?P<Service>[^/]*))/tcshost/(?P<Host>[^/]+)/tcskey(?P<KeyId>/[^/]+)(?P<KeyMisc>(/[^/]+)+)/tcsopt/(?P<Options>[^/]+)/tcsosig(?P<Signature>/.+)$",
+#        "^/tcspurge(?P<PurgeKey>/.+)"
+#      )
+# The session-ttl value gives the time, in hours, that a session
+# based mapping is remembered.  After that time has elapsed from
+# the original request for that session, the mapping is forgotten.
+transparent-cache.session-ttl = 1
+# The ignore-cache-inhibitors setting tells the cache to, for TCS requests,
+# ignore certain response headers that could prohibit a response from
+# being cached.  These include "Cache-Control", "Expires", "Set-Cookie",
+# and "Vary".
+transparent-cache.ignore-cache-inhibitors = "enable"
+
+## The following proxy-core configuration block allows TCS requests
+## to be forwarded.
+#
+$HTTP["url"] =~ "^/tcs.ccur.com/" {
+##
+## This conditional matches URLs which have a path
+## which starts with "/tcs.ccur.com/".  These are HTTP
+## requests that came via a Transparent Cache redirect.
+## Each request is sent to the host specified by the
+## above %P<Host> pattern match, after the
+## "/tcs.ccur.com" pseudo-path is stripped.
+##
+   proxy-core.protocol = "http"
+   proxy-core.balancer = "static"
+   proxy-core.backends = ( )
+   proxy-core.max-pool-size = 1024
+   proxy-core.max-keep-alive-requests = 1024
+   proxy-core.max-backlog-size = 64
+   proxy-core.backend-is-proxy = "disable"
+   proxy-core.forward-request = "enable"
+   proxy-core.follow-redirect = "disable"
+   proxy-core.rewrite-request = (
+         "_uri" => ( "^/tcs.ccur.com/[^/]+/[^/]+(/|)(/.*)" => "$2" )
+       )
+}
+
+## The following proxy-core configuration block allows TCS/ytb requests
+## to be forwarded when CORS requests are being redirected .
+#
+$HTTP["url"] =~ "^/tcs.ccur.com/video/ytb/" {
+   setenv.add-response-header = (
+      "Access-Control-Allow-Origin" => "null",
+      "Access-Control-Allow-Credentials" => "true"
+   )
+   proxy-core.rewrite-request = (
+         "_uri" => ( "^/tcs.ccur.com/[^/]+/[^/]+(/|)(/.*)" => "$2" )
+       )
+}
+
+##
+## Unified Edge MHStore Cache Options
+##
+## These options control the behaviour of the edge cache.
+## 
+## Base options - do not change these options
+cachemanager.mhstore = "enable"
+proxy-core.use-mhstore = "enable"
+mhstore_cache.bases = ("/var/lib/MediaHawk/Edge/webroot/cache")
+mhstore_cache.enable = "enable"
+mhstore_cache.backend = "enable"
+#
+## The following options may be changed but for most configurations 
+## these values will suffice
+#
+mhstore_cache.dynamic-mode = "enable"
+mhstore_cache.support-queries = "enable"
+mhstore_cache.debug = "disable"
+## Redis options.  
+## There should be no need to change these options
+##
+#mhstore_cache.database-id = 1
+#mhstore_cache.database-host = "127.0.0.1"
+#mhstore_cache.database-port = 6379
+#
+## Define local memory that can be used by the mhstore cache
+## This value is specified in Mbytes and may need to be reduced on edge
+## systems with limited available memory
+mhstore_cache.max-memory-size = 2000	# 2Gbytes
+#
+##
+## Cache Refresh Patterns
+## These patterns control what is cached and for how long
+## Details of how to define these patterns are included in the 
+## Unified Edge documentation.  
+## NOTE:  URLs that do not match a refesh-pattern are not cached
+##        Be sure to include a default rule.
+## The patterns included here are typical patterns.
+
+mhstore_cache.refresh-pattern = (
+        # format: "url_pcre_regx" => "time[s|m|h|d] [options]". 
+        # NB: 'time' field is mandatory and defaults to minutes.
+        #
+        #########TCS SPECIFIC START####################
+        # these files are to be served from local storage
+        "^\/(?i)(crossdomain.xml)$" => "0 local lower-case",
+        "^\/(?i)(clientaccesspolicy.xml)$" => "0 local lower-case",
+        # These patterns control how long the content
+        # should be cached. A user can specify the
+        # scope per type or/and service level.
+        # the regex match is being evaluated top to bottom.
+        # Format: /tcs.ccur.com/<type>/<service>
+        #"^/tcs.ccur.com/video/ntflx/" => "500",  # update netflix video type of service every 500 minutes
+        #"^/tcs.ccur.com/video/" => "120",        # update all video type of service every 120 minutes
+        "^/tcs.ccur.com/livevideo/" => "30s",     # update all live video type of service every 30 seconds
+        "^/tcs.ccur.com/" => "3000",              # update all types of service every 3000 minutes
+        #########TCS SPECIFIC END ####################
+        # don't cache manifests
+        "\/(?i)([Mm]anifest)$" => "0 nocache",
+        "\.(?i)(ism|ssm|f4m|m3u8)$" => "0 nocache",
+
+        # update objects after given time or on refresh, use memory cache
+        "\.(?i)(js|css|xml)$" => "4h use-memory",          # update every 4 hours
+        "\.(?i)(htm|html|shtml)$" => "30 use-memory",      # update every 30 minutes
+
+        # update objects after given time or on refresh, use file cache
+        "\.(?i)(jpg|bmp|jpg|jpeg|gif|png)$" => "2d",       # update graphics files every 2 days
+        "\.(?i)(xap|swf)$" => "2d",                        # update executables files every 2 days
+        "\.(?i)(ts)$" => "120",                            # update HLS fragments for 120 minutes
+        "([Ss]eg\d+\-[Ff]rag\d+)$" => "120",               # update HDS fragments for 120 minutes
+        "([Ff]ragments\((.*)\))$" => "120",                # update MSS fragments for 120 minutes
+
+        # default
+        #default values for Transparent caching solution
+        "." => "180000s ignore-set-cookie update-on-refresh" # update every 180000 seconds or 3000 minutes
+)
+

@@ -1,0 +1,83 @@
+#!/bin/bash
+#
+#    /etc/rc.d/init.d/tcache_agentx
+#
+# Starts the tcache_agentx
+#
+# chkconfig: - 95 5
+# description: starts Conncurrent Transparent Caching agentx daemon.
+# processname: tcache_agentx
+
+# Source function library.
+. /etc/init.d/functions
+
+# set -x
+
+BINPATH="/usr/local/sbin"
+
+test -x $BINPATH/tcache_agentx || exit 0
+
+RETVAL=0
+
+prog="tcache_agentx"
+
+start() {
+    ulimit -S -c unlimited >/dev/null 2>&1
+    # Check if tcache_agentx is already running
+    if [ ! -f /var/lock/subsys/tcache_agentx ]; then
+        echo -n $"Starting $prog: "
+        # daemon $BINPATH/tcache_agentx -l7;  # level 7 -debug mode
+        daemon $BINPATH/tcache_agentx
+        RETVAL=$?
+        [ $RETVAL -eq 0 ] && (success; touch /var/lock/subsys/tcache_agentx) || failure;
+        echo
+    fi
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc /usr/local/bin/tcache_agentx
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/tcache_agentx
+    echo
+    return $RETVAL
+}
+
+restart() {
+    stop
+    start
+}
+
+reload() {
+    restart
+}
+
+status_at() {
+     status $BINPATH/tcache_agentx
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    reload|restart)
+        restart
+        ;;
+    condrestart)
+        if [ -f /var/lock/subsys/tcache_agentx ]; then
+            restart
+        fi
+        ;;
+    status)
+        status_at
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|restart|condrestart|status}"
+        exit 1
+esac
+
+exit $RETVAL

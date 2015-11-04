@@ -1,0 +1,182 @@
+Control plane runtime and pattern matching reloadable configuration structures
+Tag Name                        Description                           Unit      Limits        Optional     Relationships
+***********************************************************************************************************************************
+/version                        Config version                        String    32 bytes       No            None
+/modeofoperation                Mode of operation:
+                                “active” or “monitor”                 String    32 bytes       No            None
+/monitoringinterface            Monitoring interface(s). 
+                                Interface name followed by traffic
+                                direction format: 
+                                '"<intf>:<rx/tx>";...'                
+                                example:
+                                '"eth0:rx";"eth1:rx"'                 String    256 bytes      No            None
+/pcap-filter                    Apply filter(s) on specified 
+                                monitoring interface in Berkeley 
+                                Packet Filter (BPF) format. 
+                                Interface name followed by BPF 
+                                filter format: 
+                                '"<intf>:<BPF>";...' 
+                                Example:
+                                '"eth0:tcp dst port 80";
+                                "eth1:mpls 29 and tcp dst port 80"'              
+                                Note: An interface can have 
+                                multiple BPF filters.                 String    1024 bytes     No            /monitoringinterface
+/redirectaddress                Redirect packets from specified 
+                                monitoring interface to specified 
+                                Request Router (RR) or caching server
+                                address. Address for each monitoring 
+                                interface also serves as black list
+                                address. Interface name followed
+                                by redirection address format:
+                                '"<intf>:<redir addr>";...'
+                                or old format '<redir addr>'
+                                Example:
+                                '"eth0:192.168.100.100";
+                                "eth1:192.168.100.101"'
+                                Note: backward compatibility.
+                                if only one interface 
+                                '<redir addr>' is specified and 
+                                mapping of interface 
+                                name is not specified, 
+                                all monitoring interface(s) 
+                                will go to the same address.         String    512 bytes        No            /monitoringinterface
+/outgoinginterface              Outgoing interface(s) packet 
+                                injection point (Tx line). 
+                                Interface name followed by 
+                                target node type format:
+                                '"<intf>:<router/other>",...' 
+                                or old format '<router/other>'
+                                example: '"eth1:other";"eth0:router"'           
+                                Note: backward compatibility.
+                                if only one interface is 
+                                specified and mapping of interface 
+                                name is not specified, all monitoring 
+                                interface(s) will map/link to the 
+                                same outgoing interface.              
+                                note: IP address MUST be specified 
+                                on linux interface (ifconfig) 
+                                if outgoing interface is to be 
+                                connected to "router".                String    256 bytes       No            None
+/outgoinginterfacedestmac       Outgoing interface injection packet
+                                destination MAC address. When set,
+                                the value will overwrite content
+                                gwdisc service value. Interface
+                                name followed by MAC address 
+                                format:
+                                '"<intf>:<MAC address>",...' 
+                                Automatically set by gwdisc service.  String    256 bytes       yes           /outgoinginterface
+/outgoinginterfacesrcmac        Outgoing interface injection packet
+                                source MAC address. When set,
+                                the value will overwrite content
+                                gwdisc service value. Interface
+                                name followed by MAC address 
+                                format:
+                                '"<intf>:<MAC address>",...' 
+                                Automatically set by gwdisc service.  String    256 bytes       yes           /outgoinginterface
+/outgoinginterfaceignorecors    Filter to ignore all CORS 
+                                (Cross Origin Resource Sharing) 
+                                requests with value can be set 
+                                to 'true' or 'false'.
+                                False by default.                     String    16 bytes        yes           /outgoinginterface
+/outgoinginterfacemplslabel     Inject packet with mpls label		      
+                                within Layer 2.5 with value can 
+                                be set to 'true' or 'false'.
+                                False by default.                     String    16 bytes        yes           /outgoinginterface
+/outgoingredirreqratemax        Maximum Inject redirect rate 
+                                (pkts/sec) . 5k pkts/sec by
+                                dafault.                              String    32 bytes        yes           /outgoinginterface
+/mapinterface                   Map or link monitoring Rx interface
+                                to outgoing interface Tx. Format:
+                                '"<mon-intf>:<out-intf>",...'
+                                Example:                 
+                                '"eth0:eth0";"eth1:eth1"'             String    256 bytes       yes           /outgoinginterface,/monitoringinterface  
+/ipblacklist                    Black list of ip address separated
+                                by “,”.                               String    1024 bytes      yes           None
+/processproxyrequest            Process proxied request
+                                'true' or 'false'. 
+                                False by default.                     String    16 bytes        No            None
+/bwsimulationmode               Bandwidth simulation mode 
+                                'true' or 'false'. False
+                                by default.                           String    16 bytes        No            None
+/bwsimulationoutgoinginterface  Bandwidth simulation mode
+                                outgoing interface for 
+                                GET and HEAD request.
+                                Routing table based by default.
+                                example: eth0                         String    64 bytes        No            None
+/bwsimulationworkers            Bandwidth simulation mode 
+                                worker threads to perform
+                                GET and HEAD request.                 String    16 bytes        No            None.
+                                1 woker by default.
+/services                       List of interested monitored     
+                                target content services               List      64 objects      No            None
+/services/type                  Content type                          String    64 bytes        No            None
+/services/target                Content target name                   String    256 bytes       No            None
+/services/options               Cache server site content 
+                                options comma separated, 
+                                “cache”, “no-cache” or 
+                                "cache key cksum map format"
+                                (<svcname>-ckeymap-
+                                <container>-<cksumsize>)              String    32 bytes        No            None
+/services/httphdrmatchsignature Generic Http field-value header 
+                                filter signature pattern separated 
+                                by “;” in '"<fieldname>:<value>";...' 
+                                format. Request will be processed if 
+                                field-value match is found 
+                                otherwise ignored. Can be set to
+                                overload /services/hostsignature
+                                value.                                String    256 bytes       Yes           None
+/services/hostsignature         Hostname filter signature pattern 
+                                separated by “;”. Request will 
+                                be processed if hostname match 
+                                is found otherwise ignored.           String    256 bytes       Yes           None
+/services/referersignature      Content HTTP header referrer 
+                                signature pattern separated 
+                                by “;”. Overloads content cache 
+                                key Id value.                         String    256 bytes       Yes           /services/url/cachekeyid
+/services/httprangefield        Content HTTP header range 
+                                field name. Overloads content 
+                                cachekey range value                  String    256 bytes       Yes           /services/url/cachekeyrange
+/services/url                   List of content GET request URL  
+                                signature                             List      16 objects      No            None
+/services/url/signature         Content GET request URL 
+                                signature                             String    1024 bytes      No            None
+/services/url/maxmatchsize      Maximum URL GET request signature 
+                                match size length                     Unsigned int 128 bytes    No            None
+/services/url/contextid         Multiple content context Id URL 
+                                relationships to none or list of 
+                                sessions signature patterns for 
+                                HTTP GET separated by “;”. 
+                                Context is grouped by session id 
+                                if specified.                         String    1024 bytes      No            /services/session/contextid,
+/services/url/cachekeyid        Multiple content cache key Id URL 
+                                signature patterns for HTTP GET 
+                                separated by “;”. Being Overloaded by 
+                                HTTP header referrer field value.     String    1024 bytes      No            /services/referersignature 
+/services/url/cachekeyrange     Content cache key range URL 
+                                signature pattern for HTTP GET. 
+                                Being Overloaded by HTTP header 
+                                range field value.                    String    1024 bytes      Yes           /services/httprangefield
+/services/url/cachekeymisc      Multiple content cache key 
+                                miscellaneous URL signature 
+                                patterns for HTTP GET separated 
+                                by “;”                                String    1024 bytes      Yes           None
+/services/session               List of session GET request 
+                                signature                             List      4  objects      Yes           None
+/services/session/signature     Session GET request signature         String    1024 bytes      No            None
+/services/session/maxmatchsize  Maximum session GET request 
+                                signature match size length           Unsigned int 128 bytes    No            None
+/services/session/cachekeyid     Multiple session cache key Id 
+                                signature patterns for HTTP GET 
+                                separated by “;”.                     String    1024 bytes      No            None
+/services/session/contextid     Multiple session context Id 
+                                relationships to list of urls 
+                                signature patterns for HTTP GET 
+                                separated by “;”                      String    1024 bytes      No            /services/url/contextid
+/services/session/cachekeyrange Content cache key range 
+                                session signature pattern for 
+                                HTTP GET. Being Overloaded by 
+                                HTTP header range field value.        String    1024 bytes      Yes           /services/httprangefield
+/services/session/cachekeymisc  Multiple content cache key 
+                                miscellaneous session signature 
+                                patterns for HTTP GET separated 
+                                by “;”                                String    1024 bytes      Yes           None

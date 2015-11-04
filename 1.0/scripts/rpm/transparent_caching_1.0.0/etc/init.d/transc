@@ -1,0 +1,109 @@
+#!/bin/sh
+#
+# /etc/rc.d/init.d/transc
+#
+# Supervisor is a client/server system that
+# allows its users to monitor and control a
+# number of processes on UNIX-like operating
+# systems.
+#
+# chkconfig: - 60 36
+# description: Transparent Caching
+# processname: transc
+ 
+# Source init functions
+. /etc/rc.d/init.d/functions
+ 
+prog="transc"
+prefix="/usr/local"
+exec_prefix="${prefix}"
+prog_bin="${exec_prefix}/bin/transparent_caching"
+sysconf_dir="/etc/sysconfig/transparent_caching"
+TRANSCX="$prog_bin/./$prog"
+TRANSCPIDFILE=/var/run/transc.pid
+
+#
+# Name:    f_chkinput
+# Purpose: check input
+# TODO: move this function to /etc/rc.d/init.d/functions
+f_chkinput()
+{
+    if [ -z $1 ]; then
+        echo "error no input"
+        exit 1
+    fi
+}
+ 
+start()
+{
+       	ulimit -S -c unlimited >/dev/null 2>&1
+        modprobe pf_ring
+     	lsmod | grep pf_ring > /dev/null
+        RETVAL=$?
+        if [ $RETVAL -eq 1 ]; then 
+            echo failure "pf_ring.ko kernel module is not currently loaded, please load the kernel module."
+            exit 1  
+        fi
+        #remove transc.pid file if exists and no process running
+        pidof transc > /dev/null
+        if [ $? -eq 1 ] && [ -f $TRANSCPIDFILE ]; then 
+            rm -f $TRANSCPIDFILE
+            echo "delete pid file $TRANSCPIDFILE"
+        fi
+
+        rm -f $sysconf_dir/sys.yaml > /dev/null
+        cp -f $sysconf_dir/dfltsys.yaml $sysconf_dir/sys.yaml > /dev/null 
+        #call gwdisc and find the gw and interface MAC address
+        python $prog_bin/./gwdisc.py -c $sysconf_dir/config.yaml -o $sysconf_dir/sys.yaml
+        echo -n $"Starting $prog: "
+        $prog_bin/./$prog -d -c $sysconf_dir/config.yaml -lc $sysconf_dir/trlog.conf -sc $sysconf_dir/sys.yaml
+        RETVAL=$?
+        if [ $RETVAL -eq 0 ]; then
+           [ -f $TRANSCX ] && success $"$prog startup" || failure $"$prog startup please check logfile"
+           echo
+        elif [ $RETVAL -eq 5 ]; then
+           echo failure $"$prog startup please check logfile"
+        elif [ $RETVAL -eq 4 ]; then
+           echo "failure resource initializations"
+        elif [ $RETVAL -eq 3 ]; then
+           echo "failure another process already running."
+        elif [ $RETVAL -eq 2 ]; then
+           echo failure $"$prog startup please check logfile"
+	    else
+           echo failure initialization $"$prog startup please check logfile"
+        fi
+
+}
+ 
+stop()
+{
+        echo -n $"Shutting down $prog: "
+        [ -f $TRANSCX ] && killproc $prog || success $"$prog shutdown"
+        echo
+}
+
+case "$1" in
+ 
+  start)
+    start
+  ;;
+ 
+  stop)
+    stop
+  ;;
+        
+  status)
+        status $prog
+  ;;
+ 
+  restart)
+    stop
+    start
+  ;;
+ 
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+  ;;
+ 
+esac
+

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<access-policy>
+  <cross-domain-access>
+    <policy>
+      <allow-from http-request-headers="Range">
+        <domain uri="http://netflix.ca"/>
+        <domain uri="http://*.netflix.ca"/>
+        <domain uri="https://netflix.ca"/>
+        <domain uri="https://*.netflix.ca"/>
+
+        <domain uri="http://netflix.co.uk"/>
+        <domain uri="http://*.netflix.co.uk"/>
+        <domain uri="https://netflix.co.uk"/>
+        <domain uri="https://*.netflix.co.uk"/>
+
+        <domain uri="http://netflix.com"/>
+        <domain uri="http://*.netflix.com"/>
+        <domain uri="https://netflix.com"/>
+        <domain uri="https://*.netflix.com"/>
+
+        <domain uri="http://netflix.com:7001"/>
+        <domain uri="http://*.netflix.com:7001"/>
+        <domain uri="https://netflix.com:7001"/>
+        <domain uri="https://*.netflix.com:7001"/>
+
+        <domain uri="http://netflix.fr"/>
+        <domain uri="http://*.netflix.fr"/>
+        <domain uri="https://netflix.fr"/>
+        <domain uri="https://*.netflix.fr"/>
+
+        <domain uri="http://netflix.jp"/>
+        <domain uri="http://*.netflix.jp"/>
+        <domain uri="https://netflix.jp"/>
+        <domain uri="https://*.netflix.jp"/>
+
+        <domain uri="http://netflix.tw"/>
+        <domain uri="http://*.netflix.tw"/>
+        <domain uri="https://netflix.tw"/>
+        <domain uri="https://*.netflix.tw"/>
+      </allow-from>
+      <grant-to>
+        <resource path="/" include-subpaths="true"/>
+      </grant-to>
+    </policy>
+  </cross-domain-access>
+</access-policy>

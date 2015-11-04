@@ -1,0 +1,41 @@
+For SNMP, I think we’d like to see the following:
+
+ 
+
+Status of the control plane (i.e. is it running, does it have some sort of error condition)
+
+ 
+
+Amount of traffic monitored in last 24 hours, hour, minute
+
+ 
+
+Number of interceptions (i.e. redirects) performed in last 24 hours, hour, minute
+
+-----------------------------------------------------------------------------------------------
+
+Tally of top domains (e.g. Youtube, Netflix, Apple) seen in last 24 hours, hour, minute
+
+ 
+
+Tally of top domains intercepted in last 24 hours, hour, minute
+
+ 
+
+Tally of top video formats seen in last 24 hours, hour, minute
+
+ 
+
+Tally of top video formats intercepted in last 24 hours, hour, minute
+
+ 
+
+Tally of top client devices seen in last 24 hours, hour, minute
+
+ 
+
+Tally of top client devices intercepted in last 24 hours, hour, minute
+
+
+
+Tally of top client device types, similar to the tally of top domains

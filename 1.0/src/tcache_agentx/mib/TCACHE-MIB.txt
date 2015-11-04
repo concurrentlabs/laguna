@@ -1,0 +1,541 @@
+TCACHE-MIB DEFINITIONS ::= BEGIN
+IMPORTS 
+    enterprises, Counter32
+        FROM SNMPv2-SMI
+    OBJECT-TYPE 
+        FROM RFC-1212
+        MODULE-IDENTITY, Integer32, Unsigned32
+        FROM SNMPv2-SMI
+        --
+        OBJECT-GROUP 
+        FROM SNMPv2-CONF;
+
+tcacheMIB MODULE-IDENTITY
+    LAST-UPDATED    "201503110000Z"
+    ORGANIZATION    "Concurrent Computer Corporation"
+    CONTACT-INFO    " "
+    DESCRIPTION     "MIB support Concurrent's Transparent Caching Solution."
+    REVISION        "201503110000Z"
+    DESCRIPTION     " "
+    ::= { concurrentComputerCorporation 4 }
+
+concurrentComputerCorporation OBJECT IDENTIFIER ::= { enterprises 1457 }
+transCache                    OBJECT IDENTIFIER ::= { tcacheMIB 1 }
+transCacheControlPlane        OBJECT IDENTIFIER ::= { transCache 1 }
+
+tcacheGroup OBJECT-GROUP
+    OBJECTS {   status,
+                trafficCount,
+                redirectCount,
+                --
+                domain,
+                domainCount,
+                --
+                domainRedirect,
+                domainRedirectCount,
+                --
+                video,
+                videoCount,
+                --
+                videoRedirect,
+                videoRedirectCount,
+                --
+                client,
+                clientCount,
+                --
+                clientRedirect,
+                clientRedirectCount,
+                --
+                clientTopDevice,
+                clientTopDeviceCount,
+                --
+                redirectedService,
+                redirectedServiceCount,
+                --
+                maxTableXmit,
+                edgeProbeDuration,
+                tablePurgeDuration,
+                --
+                tcsStartTime,
+                tcsVersion,
+                --
+                mode }
+    STATUS  current
+    DESCRIPTION " "
+    ::= { transCacheControlPlane 1 }
+
+-- **********************************************************************************
+-- cache control plane - up/down
+-- **********************************************************************************
+status OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Ping Transparent Cache Control Plane."
+    ::= { transCacheControlPlane 2 }
+
+-- **********************************************************************************
+-- Overall Activity Counters
+-- **********************************************************************************
+trafficCount OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Traffic Counter for Transparent Cache Control Plane."
+    ::= { transCacheControlPlane 3 }
+
+redirectCount OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Redirect Counter for Transparent Cache Control Plane."
+    ::= { transCacheControlPlane 4 }
+
+-- **********************************************************************************
+-- Domain Table - tally of top domains.
+-- **********************************************************************************
+domainTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF DomainEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    ::= { transCacheControlPlane 5 }
+
+domainEntry OBJECT-TYPE
+    SYNTAX      DomainEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    INDEX { domainIdx }
+    ::= { domainTable 1 }
+
+DomainEntry ::= SEQUENCE {
+    domainIdx   Integer32,
+    domain      OCTET STRING,
+    domainCount Counter32
+}
+
+domainIdx OBJECT-TYPE
+    SYNTAX      Integer32 (0..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    ::= { domainEntry 1 }
+
+domain OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE (64))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Domains from all requests TCS sees."
+    ::= { domainEntry 2 }
+
+domainCount OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Count of how many requests are from the domain."
+    ::= { domainEntry 3 }
+
+-- **********************************************************************************
+-- Domain Redirect Table - tally of domain redirects.
+-- **********************************************************************************
+domainRedirectTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF DomainRedirectEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    ::= { transCacheControlPlane 6 }
+
+domainRedirectEntry OBJECT-TYPE
+    SYNTAX      DomainRedirectEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    INDEX { domainRedirectIdx }
+    ::= { domainRedirectTable 1 }
+
+DomainRedirectEntry ::= SEQUENCE {
+    domainRedirectIdx   Integer32,
+    domainRedirect      OCTET STRING,
+    domainRedirectCount Counter32
+}
+
+domainRedirectIdx OBJECT-TYPE
+    SYNTAX      Integer32 (0..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    ::= { domainRedirectEntry 1 }
+
+domainRedirect OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE (64))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Domains from all requests TCS redirects."
+    ::= { domainRedirectEntry 2 }
+
+domainRedirectCount OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Count of how many requests are from the domain."
+    ::= { domainRedirectEntry 3 }
+
+-- **********************************************************************************
+-- Video Table - tally of video formats.
+-- **********************************************************************************
+videoTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF VideoEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    ::= { transCacheControlPlane 7 }
+
+videoEntry OBJECT-TYPE
+    SYNTAX      VideoEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    INDEX { videoIdx }
+    ::= {videoTable 1 }
+
+VideoEntry ::= SEQUENCE {
+    videoIdx    Integer32,
+    video       OCTET STRING,
+    videoCount  Counter32
+}
+
+videoIdx OBJECT-TYPE
+    SYNTAX      Integer32 (0..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    ::= { videoEntry 1 }
+
+video OBJECT-TYPE
+    SYNTAX    OCTET STRING (SIZE (64))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    ::= { videoEntry 2 }
+
+videoCount OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    ::= { videoEntry 3 }
+
+-- **********************************************************************************
+-- Video Redirect Table
+-- **********************************************************************************
+videoRedirectTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF VideoRedirectEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    ::= { transCacheControlPlane 8 }
+
+videoRedirectEntry OBJECT-TYPE
+    SYNTAX      VideoRedirectEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    INDEX { videoRedirectIdx }
+    ::= { videoRedirectTable 1 }
+
+VideoRedirectEntry ::= SEQUENCE {
+    videoRedirectIdx    Integer32,
+    videoRedirect       OCTET STRING,
+    videoRedirectCount  Counter32
+}
+
+videoRedirectIdx OBJECT-TYPE
+    SYNTAX      Integer32 (0..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    ::= { videoRedirectEntry 1 }
+
+videoRedirect OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE (64))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    ::= { videoRedirectEntry 2 }
+
+videoRedirectCount OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    ::= { videoRedirectEntry 3 }
+
+-- **********************************************************************************
+-- Client Table - tally of client devices.
+-- **********************************************************************************
+clientTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClientEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    ::= { transCacheControlPlane 9 }
+
+clientEntry OBJECT-TYPE
+    SYNTAX      ClientEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    INDEX { clientIdx }
+    ::= { clientTable 1 }
+
+ClientEntry ::= SEQUENCE {
+    clientIdx   Integer32,
+    client      OCTET STRING,
+    clientCount Counter32
+}
+
+clientIdx OBJECT-TYPE
+    SYNTAX      Integer32 (0..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    ::= { clientEntry 1 }
+
+client OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE (64))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Client identifier for all requests TCS sees."
+    ::= { clientEntry 2 }
+
+clientCount OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Count of how many requests are from the client."
+    ::= { clientEntry 3 }
+
+-- **********************************************************************************
+-- Client Redirect Table - tally client device redirects.
+-- **********************************************************************************
+clientRedirectTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClientRedirectEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    ::= { transCacheControlPlane 10 }
+
+clientRedirectEntry OBJECT-TYPE
+    SYNTAX      ClientRedirectEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    INDEX { clientRedirectIdx }
+    ::= { clientRedirectTable 1 }
+
+ClientRedirectEntry ::= SEQUENCE {
+    clientRedirectIdx   Integer32,
+    clientRedirect      OCTET STRING,
+    clientRedirectCount Counter32
+}
+
+clientRedirectIdx OBJECT-TYPE
+    SYNTAX      Integer32 (0..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    ::= { clientRedirectEntry 1 }
+
+clientRedirect OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE (64))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Client identifier from all redirected requests."
+    ::= { clientRedirectEntry 2 }
+
+clientRedirectCount OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Count of the redirected requests for each client."
+    ::= { clientRedirectEntry 3 }
+
+-- **********************************************************************************
+-- Client Top Device Table - tally of top client devices.
+-- **********************************************************************************
+clientTopDeviceTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClientTopDeviceEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    ::= { transCacheControlPlane 11 }
+
+clientTopDeviceEntry OBJECT-TYPE
+    SYNTAX      ClientTopDeviceEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    INDEX { clientTopDeviceIdx }
+    ::= { clientTopDeviceTable 1 }
+
+ClientTopDeviceEntry ::= SEQUENCE {
+    clientTopDeviceIdx    Integer32,
+    clientTopDevice       OCTET STRING,
+    clientTopDeviceCount  Counter32
+}
+
+clientTopDeviceIdx OBJECT-TYPE
+    SYNTAX      Integer32 (0..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    ::= { clientTopDeviceEntry 1 }
+
+clientTopDevice OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE (64))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    ::= { clientTopDeviceEntry 2 }
+
+clientTopDeviceCount OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Not Currently Supported."
+    ::= { clientTopDeviceEntry 3 }
+
+-- **********************************************************************************
+-- Redirected Service Table - tally of redirected services.
+-- **********************************************************************************
+redirectedServiceTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF RedirectedServiceEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    ::= { transCacheControlPlane 12 }
+
+redirectedServiceEntry OBJECT-TYPE
+    SYNTAX      RedirectedServiceEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    INDEX { redirectedServiceIdx }
+    ::= { redirectedServiceTable 1 }
+
+RedirectedServiceEntry ::= SEQUENCE {
+    redirectedServiceIdx    Integer32,
+    redirectedService       OCTET STRING,
+    redirectedServiceCount  Counter32
+}
+
+redirectedServiceIdx OBJECT-TYPE
+    SYNTAX      Integer32 (0..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    ::= { redirectedServiceEntry 1 }
+
+redirectedService OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE (256))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " List of redirected services and types."
+    ::= { redirectedServiceEntry 2 }
+
+redirectedServiceCount OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Count of redirected requests for each service."
+    ::= { redirectedServiceEntry 3 }
+
+-- **********************************************************************************
+-- Max Table Transmission.
+-- **********************************************************************************
+maxTableXmit OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION "Max Table Transmission rows."
+    ::= { transCacheControlPlane 13 }
+
+-- **********************************************************************************
+-- Edge Probe Duration in seconds.
+-- **********************************************************************************
+edgeProbeDuration OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION "Edge Probe Duration in seconds."
+    ::= { transCacheControlPlane 14 }
+
+-- **********************************************************************************
+-- Table Purge Duration in seconds.
+-- **********************************************************************************
+tablePurgeDuration OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION "Table Purge Duration in seconds."
+    ::= { transCacheControlPlane 15 }
+
+-- **********************************************************************************
+-- TCS ControlPlane Start Time as string, format xxxx:xxx:xxx.
+-- **********************************************************************************
+tcsStartTime OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE (32))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " TCS ControlPlane Start Time as string, format xxx:xxxx:xxx."
+    ::= { transCacheControlPlane 16 }
+
+-- **********************************************************************************
+-- TCS ControlPlane Version.
+-- **********************************************************************************
+tcsVersion OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE (32))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " TCS Version."
+    ::= { transCacheControlPlane 17 }
+
+-- **********************************************************************************
+-- TCS Mode Table - Modes of TCS interfaces.
+-- **********************************************************************************
+modeTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ModeEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    ::= { transCacheControlPlane 18 }
+
+modeEntry OBJECT-TYPE
+    SYNTAX      ModeEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    INDEX { modeIdx }
+    ::= { modeTable 1 }
+
+ModeEntry ::= SEQUENCE {
+    modeIdx  Integer32,
+    mode     OCTET STRING
+}
+
+modeIdx OBJECT-TYPE
+    SYNTAX      Integer32 (0..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION " "
+    ::= { modeEntry 1 }
+
+mode OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE (64))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION " Mode of TCS interface."
+    ::= { modeEntry 2 }
+
+END

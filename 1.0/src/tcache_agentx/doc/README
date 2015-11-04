@@ -1,0 +1,17 @@
+Required libraries == libsnmp-base, libsnmp-dev, libsnmp-perl, libsnmp15, libsnmp15-dbg, snmp, snmpd,
+zeromq, czmq.
+
+Required yum packages
+
+net-snmp.x86_64                   
+net-snmp-devel.x86_64                                                  
+net-snmp-libs.x86_64                                                   
+net-snmp-utils.x86_64
+kernel-devel.x86_64
+numactl.x86_64
+
+Need devtoolset-1.1-libstdc++-devel-4.7.2-5.el6.x86_64 installed.
+
+Need to register service for snmpd and tcache_agentx:
+chkconfig --level 2345 snmpd on
+chkconfig --level 2345 tcache_agentx on

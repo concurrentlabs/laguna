@@ -1,0 +1,27 @@
+# URLS file for siege
+# --
+# Format the url entries in any of the following formats:
+# http://www.whoohoo.com/index.html
+# http://www/index.html
+# www/index.html
+# http://www.whoohoo.com/cgi-bin/howto/display.cgi?1013
+# Use the POST directive for pages that require it:
+# http://www.whoohoo.com/cgi-bin/haha.cgi POST ha=1&ho=2
+#      or POST content from a file:
+# http://www.whoohoo.com/melvin.jsp POST </home/jeff/haha
+# http://www.whoohoo.com/melvin.jsp POST <./haha
+# You may also set and reference variables inside this file,
+# for more information, man urls_txt
+# -------------------------------------------------------
+http://www.google.com/videoplayback?fexp=927610%2C919007%2C901713%2C914044%2C916625%2C924399%2C937417%2C937416%2C913434%2C936910%2C936913%2C902907&ms=au&dnc=1&mv=m&el=watch&mt=1392934829&app=youtube_mobile&sparams=id%2Cip%2Cipbits%2Citag%2Cratebypass%2Csource%2Cupn%2Cexpire&id=02aa2322e39d2779&upn=RXvLwcKzoKw&signature=C886B090973CE7811CE012D32191DA3AD4BDD8FB.EBE5D0385443948CB50DB93EAB4448E162B3CE7C&sver=3&yms=qyDirXLTyjo&mws=yes&expire=1392957796&source=youtube&ipbits=0&ratebypass=yes&itag=18&key=yt5&ip=173.221.58.2&cpn=P87-pH2F1BHHWRTB
+http://www.google.com/videoplayback?clen=3166233&cpn=BYWJAeoXvzL9nrCh&dur=199.320&expire=1395381433&fexp=900356%2C937417%2C913434%2C936910%2C936913%2C934022&gir=yes&id=o-AHgVsaNYTpUCabH-IMxb8-X-Lx-R7VcHsYqhu3UFa0OV&ip=173.221.58.2&ipbits=0&140&keepalive=yes&key=yt5&lmt=1392620727762652&ms=au&mt=1395357614&mv=u&mws=yes&nh=IgpwcjAxLmF0bDAxKgkxMjcuMC4wLjE&range=475136-712703&ratebypass=yes&signature=B423BEC110B5717B3C8193EC649CF46E52148C65.53661FFA001C4C37A0008FDCC1ED4F09A4AB3B19&source=youtube&sparams=clen%2Cdur%2Cgir%2Cid%2Cip%2Cipbits%2Citag%2Clmt%2Csource%2Cupn%2Cexpire&sver=3&upn=bqd97vsgzDY
+http://www.google.com/videoplayback?algorithm=throttle-factor&burst=40&clen=159435526&cpn=yXVK7iX1gPAVYoOV&dur=5222.117&expire=1391818480&factor=1.25&fexp=900356%2C937417%2C913434%2C936910%2C936913&gir=yes&id=de2432919188c9db&ip=173.221.58.2&ipbits=0&itag=133&key=yt5&range=0-132300&keepalive=yes&ratebypass=yes&ms=au&mt=1391793862&mv=u&mws=yes&
+signature=7CB7E8D1BE80702473FE36CD5D3B7A461FA85EE7.52B7944A114745F46DF49042C1A5B5E5A0A84893&source=youtube&sparams=algorithm%2Cburst%2Cclen%2Cdur%2Cfactor%2Cgir%2Cid%2Cip%2Cipbits%2Citag%2Clmt%2Csource%2Cupn%2Cexpire&sver=3&upn=C6NYP0aoruE
+http://www.google.com/videoplayback?dnc=1&sparams=id%2Cip%2Cipbits%2Citag%2Cratebypass%2Csource%2Cupn%2Cexpire&fexp=927610%2C919007%2C901713%2C914044%2C916625%2C924399%2C937417%2C937416%2C913434%2C936910%2C936913%2C902907%2C3300131%2C3300137%2C3311933&source=youtube&key=yt5&itag=18&mws=yes&upn=T9k1Jspk1-E&ms=au&signature=640F16D67E73BD1ACD440C765085C014C1CF19B8.E5BF2E122585EB3E0F7A1E888D1E9A062B137F01&ratebypass=yes&ipbits=0&expire=1393029938&id=f9809e220b7b84cb&el=watch&sver=3&app=youtube_mobile&yms=qyDirXLTyjo&mv=u&mt=1393006158&ip=173.221.58.2&cpn=2orvvg9zYCxqQkS1
+http://www.google.com/2078441052.isma/range/0-10403?c=us&n=7029&v=3&e=1389312640&t=_yqa3k20_EKQtAZbwWQXT2C-Xdo&d=silverlight&p=5.W9lHVvh4kIQ2usgcVFKznbGOlr4wHzWZROS_FpIiGQw&random=859513402
+http://www.google.com/2078476550.ismv/range/0-10403?c=us&n=7029&v=3&e=1389312640&t=C25JMAmFrcRTODgodiFyNRJbn78&d=silverlight&p=5.W9lHVvh4kIQ2usgcVFKznbGOlr4wHzWZROS_FpIiGQw&random=859513402
+http://www.google.com/2078477679.ismv/range/0-10403?c=us&n=7029&v=3&e=1389312640&t=wKX5mwZChWLEZiwrBwXW_r2nOqc&d=silverlight&p=5.W9lHVvh4kIQ2usgcVFKznbGOlr4wHzWZROS_FpIiGQw&random=859513402
+http://www.google.com/2078478949.ismv/range/0-10403?c=us&n=7029&v=3&e=1389312640&t=uDe6sIu2SrdxB9iP_XZDAxj2_UA&d=silverlight&p=5.W9lHVvh4kIQ2usgcVFKznbGOlr4wHzWZROS_FpIiGQw&random=859513402
+http://www.google.com/2078482743.ismv/range/0-10403?c=us&n=7029&v=3&e=1389312640&t=A2AEDhIE4ASy-b9sOD-lcgKa9Bk&d=silverlight&p=5.W9lHVvh4kIQ2usgcVFKznbGOlr4wHzWZROS_FpIiGQw&random=859513402
+http://www.google.com/iOS7/UpdateBrainAsset/091-7248.20130826.Xde2w/com_apple_MobileAsset_MobileSoftwareUpdate_UpdateBrain/8bb234d17549912c9cdaad029c445398a3924f0d.zip
+http://www.google.com/iOS7/031-2920.20140221.8j5GW/iPad2,1_7.0.6_11B651_Restore.ipsw

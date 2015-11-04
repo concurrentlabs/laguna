@@ -1,0 +1,16 @@
+[Unit]
+Description=TransparentCaching snmp agentx daemon
+After=syslog.target
+After=network.target
+
+[Service]
+Type=forking
+# -l7 == debug logging - only use one of the Exec Start
+# ExecStart=/usr/local/sbin/tcache_agentx -l7
+ExecStart=/usr/local/sbin/tcache_agentx
+
+# Give a reasonable amount of time for the server to start up/shut down
+TimeoutSec=300
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,492 @@
+version: '1.3.1'
+modeofoperation: 'monitor'
+#example: monitoringinterface: '"eth0:rx";"eth1:rx"'
+monitoringinterface: 'eth1:rx'
+#example: pcap-filter: '"eth0:tcp dst port 80 ";"eth1:tcp src port 80"'
+#example: pcap-filter: '"eth1:tcp dst port 80";"eth1:tcp dst port 8080";"eth3:tcp dst port 80"'
+#example: pcap-filter: '"eth1:tcp dst port 8080";"eth1:tcp dst port 80"'
+#example: pcap-filter: '"eth9:mpls 299841 and mpls 299842";"eth9:mpls 299840"'
+#example: pcap-filter: 'eth9:mpls'
+#example: pcap-filter: '"eth9:mpls";"eth2:mpls"'
+#example: pcap-filter: '"eth9:tcp dst port 80";"eth2:tcp dst port 80"'
+pcap-filter: 'eth1:tcp dst port 80'
+#example: outgoinginterface: '"eth0:router";"eth1:other"'
+#example: outgoinginterface: '"eth6:router";"eth2:router"'
+outgoinginterface: 'eth6:router'
+#example: mapinterface: '"eth9:eth6";"eth2:eth2"'
+mapinterface: 'eth1:eth6'
+outgoinginterfaceaddmplstag: 'false'
+processproxyrequest: 'true'
+outgoingredirreqratemax: ''
+outgoinginterfacedestmac: ''
+outgoinginterfacesrcmac: ''
+#example: redirectaddress: '"eth9:10.76.103.40";"eth2:10.76.103.30"'
+redirectaddress: 'eth1:127.0.0.1'
+#ipblacklist: '10.71.101.30,10.71.103.30'
+bwsimulationmode: 'false'
+bwsimulationoutgoinginterface: 'eth2'
+bwsimulationworkers: '10'
+services:
+    #Notice! Please change below to cache when not in simulation mode
+    - type: 'video'
+      target: 'bbci'
+      options: 'no-cache'
+      hostsignature: '"akamaihd.net";"bbc.co.uk"'
+      url:
+            - signature: '^/[a-z]/iplayerstream/secure_auth/\,.*?(.ts)'
+              maxmatchsize: 440
+              cachekeyid: 'kbps/modav/([^\_]+).*?([^_]+)'
+              cachekeymisc: '.*/(.*\.ts)'
+    - type: 'video'
+      target: 'dmotion'
+      options: 'no-cache'
+      hostsignature: 'dailymotion.com'
+      url:
+            - signature: '^/sec\([^/]+/video/[^/]+/[^/]+/.*?\.(mnft)'
+              maxmatchsize: 110
+              cachekeyid: '/([^/]+)/'
+              cachekeymisc: '[^/]+/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)'
+    #Notice! Please change below to cache when not in simulation mode
+    - type: 'video'
+      target: 'dmotion'
+      options: 'no-cache'
+      hostsignature: 'dailymotion.com'
+      url:
+            - signature: '^/sec\([^/]+/frag\([^/]+/video/[^/]+/[^/]+/.*?\.(flv|ts)'
+              maxmatchsize: 110
+              cachekeyid: '/([^/]+)/'
+              cachekeymisc: '[^/]+/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)'
+    # signature matches Android phone
+    - type: 'video'
+      target: 'dmotion'
+      options: 'cache'
+      hostsignature: 'dailymotion.com'
+      url:
+            - signature: '^\/video\/[0-9]+\/[0-9]+\/.*?\.mp4'
+              maxmatchsize: 100
+              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)'
+              cachekeymisc: '/[^/]+/[^/]+/[^/]+/(.*?\.mp4)\?'
+
+    #new amazon prime video - android devices
+    - type: 'video'
+      target: 'amazon'
+      options: 'mss-cache'
+      hostsignature: '(akamaihd.net|level3.net)'
+      url:
+            - signature: '^/prod/.*?.+\.ism/manifest'
+              maxmatchsize: 110
+              cachekeyid: '/([^/]+)/'
+    #new amazon prime video - android devices
+    - type: 'video'
+      target: 'amazon'
+      options: 'cache'
+      hostsignature: '(akamaihd.net|level3.net)'
+      url:
+            - signature: '^/prod/.*?.+\.ism/QualityLevels\([0-9]'
+              maxmatchsize: 110
+              cachekeyid: '/([^/]+)/([^/]+)/'
+              cachekeymisc: '/[^/]+/[^/]+/(.*)'
+    #new amazon prime video - mobile and desktop only
+    - type: 'video'
+      target: 'amazon'
+      options: 'mss-cache'
+      hostsignature: '(akamaihd.net|level3.net)'
+      url:
+            - signature: '^/d/[^/]+/ondemand/[^/]+/prod/.*?.+\.ism/manifest'
+              maxmatchsize: 150
+              cachekeyid: '/([^/]+)/'
+    #new amazon prime video - mobile and desktop only
+    - type: 'video'
+      target: 'amazon'
+      options: 'cache'
+      hostsignature: '(akamaihd.net|level3.net)'
+      url:
+            - signature: '^/d/[^/]+/ondemand/[^/]+/prod/.*?(\.ism)/QualityLevels\('
+              maxmatchsize: 150
+              cachekeyid: '([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)'
+              cachekeymisc: '[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/(.*)'
+    #signature matches Android phone, Desktop Browser (IE,Chrome,Firefox), iPad
+    - type: 'livevideo'
+      target: 'twitch'
+      options: 'cache'
+      hostsignature: '(twitch.tv|hls.ttvnw.net)'
+      url:
+            - signature: '^/hls[0-9]([^/]+)/([^/]+)/([^/]+)/(.*?\.ts)'
+              maxmatchsize: 80
+              cachekeyid: '/([^/]+)/([^/]+)'
+              cachekeymisc: '/[^/]+/[^/]+/([^/]+)/(.*?\.ts)'
+    #signature matches Android phone, Desktop Browser (IE,Chrome,Firefox), iPad
+    - type: 'livevideo'
+      target: 'twitch'
+      options: 'ts-cache'
+      hostsignature: '(twitch.tv|hls.ttvnw.net)'
+      url:
+            - signature: '^/hls[0-9]([^/]+)/([^/]+)/([^/]+)/(.*?\.m3u8)'
+              maxmatchsize: 80
+              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)'
+    #signature matches Android phone - non live streaming for manifest
+    - type: 'video'
+      target: 'espn'
+      options: 'ts-cache'
+      hostsignature: 'espn.com'
+      url:
+            - signature: '^/motion/[0-9]+/[0-9]+/[^/]+/.*?\.m3u8'
+              maxmatchsize: 200
+              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)'
+              cachekeymisc: '/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/(.*?\.m3u8)'
+    #signature matches Android phone - live streaming
+    - type: 'livevideo'
+      target: 'espn'
+      options: 'cache'
+      hostsignature: '"espn.go.com";"edgecastdns.net"'
+      httphdrmatchsignature: 'User-Agent:^((?!Roku).)*$'
+      url:
+            - signature: '^/hls/live/[0-9]+/[a-z]+/espn\w+-\w+-[0-9]+/.*?\.ts'
+              maxmatchsize: 100
+              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)/([^/]+)'
+              cachekeymisc: '/[^/]+/[^/]+/[^/]+/[^/]+/([^/]+)/([^/]+)/(.*?\.ts)'
+            - signature: '^/slices/([^/]+)/([^/]+)/([^/]+)/(.*?\.ts\?)'
+              maxmatchsize: 120
+              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)/([^/]+)'
+              cachekeymisc: '/[^/]+/[^/]+/[^/]+/[^/]+/(.*?\.ts)'
+            - signature: '^/ls[0-9]*/espn/[0-9]+/[0-9]+/[0-9]+/\w+/\w+/[0-9]+/[0-9]+/.*?\.ts'
+              maxmatchsize: 100
+              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)'
+              cachekeymisc: '/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/([^/]+)/([^/]+)/([^/]+)/(.*?\.ts)'
+    #signature matches Android phone - non live streaming
+    - type: 'video'
+      target: 'espn'
+      options: 'cache'
+      hostsignature: 'espn.com'
+      url:
+            - signature: '^/motion/[0-9]+/[0-9]+/[^/]+/hls/.*?\.ts'
+              maxmatchsize: 100
+              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)'
+              cachekeymisc: '/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/(.*?\.ts)'
+#signature matches desktop - does not work - requires passing cookie - future enhancement
+#    - type: 'livevideo'
+#      target: 'nbcsports'
+#      options: 'mss-cache'
+#      hostsignature: '"akamaihd.net";"nbcolympics.com"'
+#      url:
+#            - signature: '^/nbc[0-9]+/\S+\.ism/manifest\(format='
+#              maxmatchsize: 150
+#              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)'
+#              cachekeymisc: '/[^/]+/[^/]+/(.*?\.ism)'
+##            - signature: '^/nbc[0-9]+/[^/]+/\S+/QualityLevels\([0-9]+\)/Fragments\('
+##              maxmatchsize: 200
+##              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)'
+##              cachekeymisc: '/[^/]+/[^/]+/[^/]+/([^/]+)/([^\?]+)'
+    #signature matches Android, iPad
+    - type: 'livevideo'
+      target: 'nbcsports'
+      options: 'cache'
+      hostsignature: '"akamaihd.net";"nbcolympics.com"'
+      url:
+             # matches android
+            - signature: '^/hls/live/[0-9]+/\w+/\w+/\w+/[0-9]+/segment_[0-9]+\.ts'
+              maxmatchsize: 100
+              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)'
+              cachekeymisc: '/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/(.*?\.ts)'
+            - signature: '^/nbc[0-9]+/[^/]+/\S+/QualityLevels\([0-9]+\)/Fragments\('
+              maxmatchsize: 200
+              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)'
+              cachekeymisc: '/[^/]+/[^/]+/[^/]+/([^/]+)/([^\?]+)'
+    #signature matches iPad
+    - type: 'video'
+      target: 'nbcsports'
+      options: 'mss-cache'
+      httphdrmatchsignature: 'User-Agent:^((?!(Mozilla|Chrome)).)*$'
+      hostsignature: '"akamaihd.net";"nbcolympics.com"'
+      url:
+            - signature: '^/vod+/\S+\.ism/manifest'
+              maxmatchsize: 200
+              cachekeyid: '/([^/]+)/'
+#    #Notice! Please change below to cache when not in simulation mode
+#    #NBC Sports non live on android, iPad
+    - type: 'video'
+      target: 'nbcsports'
+      options: 'no-cache'
+      hostsignature: '"akamaihd.net";"nbcolympics.com"'
+      url:
+            - signature: '^/vod/[^/]+/\S+/QualityLevels\([0-9]+\)/Keyframes\('
+              maxmatchsize: 220
+              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)'
+              cachekeymisc: '/[^/]+/[^/]+/[^/]+/([^/]+)/([^\?]+)'
+            # matches iPad Event Replays
+            - signature: '^/vod/[^/]+/\S+/QualityLevels\([0-9]+\)/Fragments\('
+              maxmatchsize: 220
+              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)'
+              cachekeymisc: '/[^/]+/[^/]+/[^/]+/([^/]+)/([^\?]+)'
+            # matches Android phone - Hightligts (non-live)
+            - signature: '^/[a-z]*/HD/video_sports/NBC.*nbcsports/[0-9]+/[0-9]+/.*\.mp4\.csmil/segment.*\.ts'
+              maxmatchsize: 220
+              cachekeyid: '/([^/])/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/(\w+.*\.mp4\.csmil)'
+              cachekeymisc: '/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/(.*?\.ts)'
+            # matches Android phone - Event Replays (non-live)
+            - signature: '^/vod/[^/]+/nbc-sports-live\S+/QualityLevels\([0-9]+\)/Fragments\('
+              maxmatchsize: 200
+              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)'
+              cachekeymisc: '/[^/]+/[^/]+/[^/]+/([^/]+)/([^\?]+)'
+    - type: 'video'
+      target: 'ytb'
+      options: 'ytb-ckeymap-mp2ts-0_512'
+      hostsignature: '"(googlevideo.com)+";"(youtube.com)+"'
+      httphdrmatchsignature: 'User-Agent:^((?!Roku).)*$'
+      url:
+            - signature: '^/videoplayback/id/o-.*\,'
+              maxmatchsize: 145
+              cachekeyid: '/videoplayback/id/([^/]+)'
+              cachekeyrange: '\,([^/]+)/begin/'
+              cachekeymisc: '/itag/([^/]+)/.*?/go[a|v]p/(.*)/begin/.*?/file/([^\?]+)'
+            - signature: '^/videoplayback/id/o-'
+              maxmatchsize: 20
+              cachekeyid: '/videoplayback/id/([^/]+)'
+              cachekeyrange: '/slices\%3D([^/]+)/begin/'
+              cachekeymisc: '/itag/([^/]+)/.*?/go[a|v]p/(.*)/begin/.*?/file/([^\?]+)'
+    #old signatures - might not exists anymore
+    - type: 'video'
+      target: 'ytb'
+      options: 'cache'
+      hostsignature: '"(googlevideo.com)+";"(youtube.com)+"'
+      httphdrmatchsignature: 'User-Agent:^((?!Roku).)*$'
+      url:
+            - signature: '^/videoplayback/id/[0-9a-z]{2}.*go[a|v]p/slices[^/]+/go[a|v]p/'
+              maxmatchsize: 120
+              cachekeyid: '/videoplayback/id/([^/]+)'
+              cachekeyrange: '/go[a|v]p/.*\,([^/]+)/go[a|v]p/.*\,([^/]+)/begin/'
+              cachekeymisc: '/itag/([^/]+)/.*?/go[a|v]p/(.*)/begin/.*?/file/([^\?]+)'
+            - signature: '^/videoplayback/id/[0-9a-z]{2}.*go[a|v]p/slices.*\,[^/]+/begin'
+              maxmatchsize: 120
+              cachekeyid: '/videoplayback/id/([^/]+)'
+              cachekeyrange: '/go[a|v]p/slices.*\,([^/]+)/begin'
+              cachekeymisc: '/itag/([^/]+)/.*?/go[a|v]p/(.*)/begin/.*?/file/([^\?]+)'
+            - signature: '^/videoplayback/id/[0-9a-z]{2}.*go[a|v]p/slices[^/]+/begin'
+              maxmatchsize: 120
+              cachekeyid: '/videoplayback/id/([^/]+)'
+              cachekeyrange: '/go[a|v]p/slices\%3D([^/]+)/begin'
+              cachekeymisc: '/itag/([^/]+)/.*?/go[a|v]p/(.*)/begin/.*?/file/([^\?]+)'
+            - signature: '^/videoplayback.*?[\?\&]id=[a-z0-9]{2}'
+              maxmatchsize: 700
+              cachekeyid: '[\&\?]id=([^\&]+)'
+              cachekeyrange: '[\&\?]range=([^\&]+)'
+              cachekeymisc: '[\&\?]itag=([^\&]+)'
+    #desktop web browser
+    - type: 'video'
+      target: 'ytb'
+      options: 'cache'
+      hostsignature: '"(googlevideo.com)+";"(youtube.com)+"'
+      referersignature: '"/watch\?v=([^\&]+)";"/embed/([^\&]+)"'
+      session:
+            - signature: '(^/stream_204\?)'
+              maxmatchsize: 16
+              contextid: '[\&\?]cpn=([^\&]+)'
+              cachekeyid: '[\&\?]docid=([^\&]+)'
+            - signature: '(^/ptracking\?)'
+              maxmatchsize: 16
+              contextid: '[\&\?]cpn=([^\&]+)'
+              cachekeyid: '[\&\?]video_id=([^\&]+)'
+      url:
+            - signature: '(^/videoplayback\?).*?(c=[Ww][Ee][Bb])'
+              maxmatchsize: 950
+              contextid: '[\&\?]cpn=([^\&]+)'
+              cachekeyrange: '[\&\?]range=([^\&]+)'
+              cachekeymisc: '[\&\?]itag=([^\&]+)'
+    #generic
+    - type: 'video'
+      target: 'ytb'
+      options: 'ytb-ckeymap-mp4-0_736'
+      hostsignature: '"(googlevideo.com)+";"(youtube.com)+"'
+      httphdrmatchsignature: 'User-Agent:^((?!Roku).)*$'
+      url:
+            - signature: '(^/videoplayback\?)'
+              maxmatchsize: 20
+              cachekeyid: '[\&\?]id=o-([^\&]+)'
+              cachekeyrange: '[\&\?]range=([^\&]+)'
+              cachekeymisc: '[\&\?]itag=([^\&]+)'
+    - type: 'video'
+      target: 'hulu'
+      options: 'cache'
+      hostsignature: '"akamaihd.net";"hulu.com";"huluedgecast.com"'
+      url:
+            - signature: '^/hulu[0-9]+/[^/]+/[^/]+/agave[a-zA-Z0-9].*(?<!\.enc)/.*?\?.*?autowidevine='
+              maxmatchsize: 100
+              cachekeyid: '([^/]+)/[^/]+/([^/]+)/'
+              cachekeymisc: '[^/]+/([^/]+)/[^/]+/([^/]+)/([^\?]+)'
+            - signature: '^/hulu[0-9]+/[^/]+/[^/]+/agave[a-zA-Z0-9].*(?<!\.enc)\?.*?autowidevine='
+              maxmatchsize: 100
+              cachekeyid: '([^/]+)/[^/]+/([^/]+)'
+              cachekeymisc: '[^/]+/([^/]+)/[^/]+/([^\?]+)'
+    - type: 'video'
+      target: 'hulu'
+      options: 'cache'
+      hostsignature: '"akamaihd.net";"hulu.com";"huluedgecast.com"'
+      url:
+            - signature: '^/httpls/[0-9]+/[^/]+/agave[a-zA-Z0-9].*?[^/]+/[^\?]+\?'
+              maxmatchsize: 90
+              cachekeyid: '([^/]+)/[^/]+/([^/]+)/'
+              cachekeymisc: '[^/]+/([^/]+)/[^/]+/([^/]+)/([^\?]+)'
+            - signature: '^/httpls/[0-9]+/[^/]+/agave[a-zA-Z0-9].*?\?'
+              maxmatchsize: 90
+              cachekeyid: '([^/]+)/[^/]+/([^/]+)/'
+              cachekeymisc: '[^/]+/([^/]+)/[^/]+/([^\?]+)'
+            - signature: '^/[0-9]+/[^/]+/agave[a-zA-Z0-9].*?[^/]+/[^\?]+\?'
+              maxmatchsize: 90
+              cachekeyid: '[^/]+/([^/]+)'
+              cachekeymisc: '([^/]+)/[^/]+/([^/]+)/([^\?]+)'
+            - signature: '^/[0-9]+/[^/]+/agave[a-zA-Z0-9].*?\?'
+              maxmatchsize: 90
+              cachekeyid: '[^/]+/([^/]+)'
+              cachekeymisc: '([^/]+)/[^/]+/([^\?]+)'
+    - type: 'video'
+      target: 'ntflx'
+      options: 'ntflx-ckeymap-mp4-0_256'
+      url:
+            - signature: '^/range/.*?([\?]o=AQ).*?v=.*?t='
+              maxmatchsize: 250
+              cachekeyid: '[\&\?]o=([^\&]+)'
+              cachekeyrange: '^/range/([^\&\?]+)'
+            - signature: '^//range/.*?([\?]o=AQ).*?v=.*?t='
+              maxmatchsize: 250
+              cachekeyid: '[\&\?]o=([^\&]+)'
+              cachekeyrange: '^//range/([^\&\?]+)'
+            - signature: '^/\?o=AQ.*?v=.*?t='
+              maxmatchsize: 250
+              cachekeyid: '[\&\?]o=([^\&]+)'
+    - type: 'osupdate'
+      target: 'ios'
+      options: 'cache'
+      hostsignature: 'apple.com'
+      url:
+            - signature: '^/iOS[0-9].*?.+\.(zip|ipsw)'
+              maxmatchsize: 250
+              cachekeyid: '([^/]+)/([^/]+)/'
+              cachekeymisc: '[^/]+/[^/]+/.*?(.+\.(zip|ipsw))'
+    - type: 'osupdate'
+      target: 'windows'
+      options: 'cache'
+      hostsignature: '"windowsupdate.com";"download.microsoft.com";"dlservice.microsoft.com"'
+      url:
+            - signature: '^/[a-zA-Z0-9]+/msdownload/update/(?!(others/))'
+              maxmatchsize: 35
+              cachekeyid: '([^/]+)/([^/]+)/'
+              cachekeymisc: '[^/]+/[^/]+/([^/]+)/(.*)'
+            - signature: '^/download/[a-zA-Z0-9]+/[a-zA-Z0-9]+/[a-zA-Z0-9]+/'
+              maxmatchsize: 20
+              cachekeyid: '([^/]+)/([^/]+)/'
+              cachekeymisc: '[^/]+/[^/]+/([^/]+)/([^/]+)/(.*)'
+            - signature: '^/msdownload/update/software/(?!(dflt/|updt/2011/05/|svpk/2011/0[2-3]/|secu/2011/06/|crup/2010/02/))'
+              maxmatchsize: 45
+              cachekeyid: '/([^/]+)/([^/]+)/'
+              cachekeymisc: '/[^/]+/[^/]+/(.*)'
+    - type: 'osupdate'
+      target: 'android'
+      options: 'cache'
+      hostsignature: 'android.clients.google.com'
+      url:
+            - signature: '^/packages/(data|ota)'
+              maxmatchsize: 15
+              cachekeyid: '/([^/]+)/([^/]+)/'
+              cachekeymisc: '/[^/]+/[^/]+/.*?(.+\.zip)'
+
+    # signatures match hbogo on desktop, ipad and droid
+    - type: 'video'
+      target: 'hbogo'
+      options: 'cache'
+      hostsignature: 'hbogo.com'
+      url:
+            # match series, movies, comedies on desktop
+            - signature: '^\/videos\/PRO12\/e2\/hbo\/feature\/\d+\/\d+\/'
+              maxmatchsize: 300
+              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/(\d+)/(\d+)/'
+              cachekeymisc: '/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/\d+/\d+/(\S+)/(\S+)'
+              # cachekeyid: '^/(videos)/(PRO12)/(e2)/(hbo)/(feature)/(\d+)/(\d+)/'
+              # cachekeymisc: '^/videos/PRO12/e2/hbo/feature/\d+/\d+/(\S+)/(\S+)'
+            # match sports on desktop
+            - signature: '^\/videos\/PRO12\/e2\/hbo\/feature\/\d+\/'
+              maxmatchsize: 300
+              cachekeyid: '/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/(\d+)/'
+              cachekeymisc: '/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/\d+/(\S+)/(\S+)'
+              # cachekeyid: '^/(videos)/(PRO12)/(e2)/(hbo)/(feature)/(\d+)/'
+              # cachekeymisc: '^/videos/PRO12/e2/hbo/feature/\d+/(\S+)/(\S+)'
+            # match movies, comedies on droid
+            - signature: '^\/hlsvideos\/.+\/hbo\/feature\/.+\/.+\/.+\/.+\/\w+\.ts'
+              maxmatchsize: 300
+              cachekeyid: '/(.+)/(.+)/(.+)/(.+)/(.+)/(.+)/(.+)/.+$'
+              cachekeymisc: '.+/(.+)/(.+$)'
+            # match sports on droid
+            - signature: '^\/hlsvideos\/.+\/hbo\/feature\/.+\/.+\/.+\/\w+\.ts'
+              maxmatchsize: 300
+              cachekeyid: '/(.+)/(.+)/(.+)/(.+)/(.+)/(.+)/.+$'
+              cachekeymisc: '.+/(.+)/(.+$)'
+            # match movies, comedies on ipad
+            - signature: '^\/videos\/.+\/.+\/hbo\/feature\/.+\/.+\/.+\/.+\/\w+\.ts'
+              maxmatchsize: 300
+              cachekeyid: '/(.+)/(.+)/(.+)/(hbo)/(feature)/(.+)/(.+)/(.+)/.+$'
+              cachekeymisc: '.+/(.+)/(.+$)'
+            - signature: '^\/videos\/.+\/.+\/hbo\/feature\/.+\/.+\/.+\/.+/\w+\.aac'
+              maxmatchsize: 300
+              cachekeyid: '/(.+)/(.+)/(.+)/(hbo)/(feature)/(.+)/(.+)/(.+)/.+$'
+              cachekeymisc: '.+/(.+)/(.+$)'
+            # match sports on ipad
+            - signature: '^\/videos\/.+\/.+\/hbo\/feature\/.+\/.+\/.+\/\w+\.ts'
+              maxmatchsize: 300
+              cachekeyid: '/(.+)/(.+)/(.+)/(hbo)/(feature)/(.+)/(.+)/.+$'
+              cachekeymisc: '.+/(.+)/(.+$)'
+            - signature: '^\/videos\/.+\/.+\/hbo\/feature\/.+\/.+\/.+\/\w+\.aac'
+              maxmatchsize: 300
+              cachekeyid: '/(.+)/(.+)/(.+)/(hbo)/(feature)/(.+)/(.+)/.+$'
+              cachekeymisc: '.+/(.+)/(.+$)'
+    # hbogo  video - roku devices
+    - type: 'video'
+      target: 'hbogo'
+      options: 'mss-cache'
+      hostsignature: 'hbogo.com'
+      url:
+            - signature: '^\/videos\/.+\/hbo\/feature\/.+\/\w+.ism\/manifest'
+              maxmatchsize: 110
+              cachekeyid: '/([^/]+)/'
+
+    - type: 'video'
+      target: 'vimeo'
+      options: 'cache'
+      hostsignature: '(vimeocdn.com|vimeo.com|vimeo)'
+      url:
+            - signature: '^/[^/]+/[^/]+/.*?\.(mp4|flv)\?.*?token[2|=](.*?\&aktimeoffset\=|.*?\&aksessionid\=|)'
+              maxmatchsize: 140
+              cachekeyid: '/([^/]+)/([^/]+)/(.*?\.(mp4|flv))\?'
+            - signature: '^/s3.vimeo.com/.*?\.(mp4|flv)\?.*?AWSAccessKeyId\=.*?\&aktimeoffset\='
+              maxmatchsize: 140
+              cachekeyid: '/(.*?\.(mp4|flv))\?'
+            - signature: '^/video/[^/]+/.*?\.mp4Frag.*?\.ts'
+              maxmatchsize: 50
+              cachekeyid: '([^/]+)/([^/]+)/(.*?\.ts)'
+#            - signature: '^/i/\,[^/]+/[0-9]{3}/[^/]+/[0-9]{3}/[^/]+/[0-9]{3}/.*?\,\.mp4\.csmil\/segment.*?\.ts'
+#              maxmatchsize: 100
+#              cachekeyid: '/(.*?.+)/'
+#              cachekeymisc: '/.*?.+/(.*?\.ts)'
+    - type: 'video'
+      target: 'liveleak'
+      options: 'cache'
+      hostsignature: 'liveleak'
+      url:
+            - signature: '^/80281E/.*?(/LiveLeak-dot-com-).*?(\.mp4|\.ogg)\?'
+              maxmatchsize: 150
+              cachekeyid: '/(.*?.+)\?'
+    - type: 'livevideo'
+      target: 'ustream'
+      options: 'cache'
+      hostsignature: 'ustream'
+      url:
+            - signature: '^/sjc.*?(/ustreamVideo/[^/]+/streams/live).*?\.flv(\?|)'
+              maxmatchsize: 120
+              cachekeyid: '/(.*?.+)/'
+              cachekeymisc: '/.*?.+/(.*?\.flv)(\?|)'
+            - signature: '^/sjc.*?(/ustreamVideo/[^/]+//streams/live).*?\.flv(\?|)'
+              maxmatchsize: 120
+              cachekeyid: '/(.*?.+)//([^/]+)/'
+              cachekeymisc: '/.*?.+/(.*?\.flv)(\?|)'
+            - signature: '^/sjc.*?(/live_[0-9]/chunk).*?\.ts(\?|)'
+              maxmatchsize: 120
+              cachekeyid: '/(.*?.+)/'
+              cachekeymisc: '/.*?.+/(.*?\.ts)(\?|)'

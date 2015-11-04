@@ -1,0 +1,74 @@
+#!/bin/sh
+#
+# /etc/rc.d/init.d/gwdisc
+#
+# Supervisor is a client/server system that
+# allows its users to monitor and control a
+# number of processes on UNIX-like operating
+# systems.
+#
+# chkconfig: - 75 36
+# description: Transparent Caching Gateway discovery
+# processname: gwdisc
+
+# Source init functions
+. /etc/rc.d/init.d/functions
+
+prog=gwdisc
+prefix="/usr/local"
+exec_prefix="${prefix}"
+sysconf_dir="/etc/sysconfig/transparent_caching"
+prog_bin="${exec_prefix}/bin/transparent_caching/gwdisc.py -c $sysconf_dir/config.yaml -o $sysconf_dir/sys.yaml -t 60 -d"
+PIDFILE="/var/run/$prog.pid"
+
+start()
+{
+        #remove transc.pid file if exists and no process running
+        ps ax | grep -v grep | grep $prog.py > /dev/null
+        if [ $? -eq 1 ] && [ -f $PIDFILE ]; then
+            rm -f $PIDFILE
+            echo "delete pid file $PIDFILE"
+        fi
+        echo -n $"Starting $prog: "
+        #daemon --pidfile $PIDFILE $prog_bin
+        python $prog_bin
+        RETVAL=$?
+        if [ $RETVAL -eq 0 ]; then
+            [ -f $PIDFILE ] && success $"$prog startup" || failure $"$prog startup"
+            echo
+        else
+            echo "failure to launch $prog please check /var/log/messages"
+        fi
+}
+
+stop()
+{
+        echo -n $"Shutting down $prog: "
+        [ -f $PIDFILE ] && killproc $prog || success $"$prog shutdown"
+        echo
+}
+
+case "$1" in
+ 
+  start)
+    start
+  ;;
+ 
+  stop)
+    stop
+  ;;
+        
+  status)
+        status $prog
+  ;;
+ 
+  restart)
+    stop
+    start
+  ;;
+ 
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+  ;;
+ 
+esac
