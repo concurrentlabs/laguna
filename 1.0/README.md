@@ -125,8 +125,3 @@ Firstly, create a working sandbox into which download and build the libraries an
 
 **libpcap support**
 - Add *PFRING=0* option to *make*, in order to build a libpcap version of control plane. EX: "make PFRING=0 package"
-
-**Misc info**
-- Valgrind vs liblfds:
-valgrind does not understand some of the instructions set pprovided by liblfds - lockless operations, this issue will be addressed on version liblfds v.7.0.0.
-http://www.liblfds.org/phpBB3/viewtopic.php?f=2&t=482
