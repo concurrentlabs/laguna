@@ -1,0 +1,25 @@
+The LAGUNA.traffic_ops profile adds the default configuration data for
+a Laguna server to pull from the traffic-control-cdn project.
+
+Steps to upload:
+1.  Login to Traffic Ops
+2.  Navigate to the misc/profiles page
+3.  Click the 'Import Profile' button
+4.  Select the LAGUNA.traffic_ops file
+5.  Click 'Submit'
+
+Traffic Ops will churn for a bit as the profile is ingested
+
+After the upload is complete you will see the Laguna profile in the
+list of profiles.
+
+Parameters names in the Laguna profile include indexes to facilitate
+ease when conversion/creation of the Laguna configuration files, which are
+YAML or JSON formatted.  If modifying, pay CLOSE attention to the
+indexes so that they are unique and consistent.  Gaps in numbering
+will be taken care of by the configuration retrieval mechanism.
+
+Unlike the rest of Traffic Ops, Laguna uses Posix regular expression
+formats, not PCRE.  
+
+   
