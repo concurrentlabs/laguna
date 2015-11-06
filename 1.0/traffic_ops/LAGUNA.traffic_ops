@@ -1,0 +1,522 @@
+{"profile":{"name":"LAGUNA","description":"Laguna - Control"},
+ "parameters":[
+  {"name":"version",                              "value":"1.0",               "config_file":"laguna-config.json"},
+  {"name":"modeofoperation",                      "value":"active",            "config_file":"laguna-config.json"},
+  {"name":"monitoringinterface.0.interface",      "value":"eth0",              "config_file":"laguna-config.json"},
+  {"name":"monitoringinterface.0.direction",      "value":"rx",                "config_file":"laguna-config.json"},
+  {"name":"monitoringinterface.0.pcap-filter",    "value":"tcp dst port 80",   "config_file":"laguna-config.json"},
+  
+  {"name":"outgoinginterface.0.interface",        "value":"eth1",              "config_file":"laguna-config.json"},
+  {"name":"outgoinginterface.0.role",             "value":"router",            "config_file":"laguna-config.json"},
+  {"name":"outgoinginterface.0.destmac",          "value":"",                  "config_file":"laguna-config.json"},
+  {"name":"outgoinginterface.0.srcmac",           "value":"",                  "config_file":"laguna-config.json"},
+  {"name":"outgoinginterface.0.bind",             "value":"",                  "config_file":"laguna-config.json"},
+
+  {"name":"outgoinginterfacemplslabel",           "value":"false",             "config_file":"laguna-config.json"},
+  {"name":"outgoinginterfaceaddmplstag",          "value":"false",             "config_file":"laguna-config.json"},
+  {"name":"outgoinginterfaceignorecors",          "value":"false",             "config_file":"laguna-config.json"},
+  {"name":"processproxyrequest",                  "value":"false",             "config_file":"laguna-config.json"},
+  {"name":"outgoingredirreqratemax",              "value":"5000",              "config_file":"laguna-config.json"},
+  {"name":"redirectaddress.0.interface",          "value":"eth1",              "config_file":"laguna-config.json"},
+  {"name":"redirectaddress.0.address",            "value":"127.0.0.1",         "config_file":"laguna-config.json"},
+  {"name":"ipblacklist.0",                        "value":"8.8.8.8",           "config_file":"laguna-config.json"},
+  {"name":"ipblacklist.1",                        "value":"8.8.4.4",           "config_file":"laguna-config.json"},
+  
+  {"name":"bwsimulation.enabled",                 "value":"false",             "config_file":"laguna-config.json"},
+  {"name":"bwsimulation.interface",               "value":"eth0",              "config_file":"laguna-config.json"},
+  {"name":"bwsimulation.workers",                 "value":"10",                "config_file":"laguna-config.json"},
+  
+  {"name":"services.0.target",            "value":"bbci",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.0.type",              "value":"video",                                                        "config_file":"laguna-services.json"},
+  {"name":"services.0.hostsignature.0",   "value":"akamaihd.net",                                                 "config_file":"laguna-services.json"},
+  {"name":"services.0.hostsignature.1",   "value":"bbc.co.uk",                                                    "config_file":"laguna-services.json"},
+  
+  {"name":"services.0.url.0.signature",   "value":"^/[a-z]/iplayerstream/secure_auth/\\,.*?(.ts)",                "config_file":"laguna-services.json"},
+  {"name":"services.0.url.0.maxmatchsize","value":"440",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.0.url.0.cachekeyid",  "value":"kbps/modav/([^\\_]+).?([^_]+)",                                "config_file":"laguna-services.json"},
+  {"name":"services.0.url.0.cachekeymisc","value":".*/(.*\\.ts)",                                                 "config_file":"laguna-services.json"},
+  {"name":"services.0.url.0.options",     "value":"no-cache",                                                     "config_file":"laguna-services.json"},
+
+
+  {"name":"services.1.target",            "value":"dmotion",                                                      "config_file":"laguna-services.json"},
+  {"name":"services.1.type",              "value":"video",                                                        "config_file":"laguna-services.json"},
+  {"name":"services.1.hostsignature.0",   "value":"dailymotion.com",                                              "config_file":"laguna-services.json"},
+
+  {"name":"services.1.url.0.signature",   "value":"/sec(.*)/video/(\\d+)/(\\d+)/(.*)mnft",                        "config_file":"laguna-services.json"},
+  {"name":"services.1.url.0.maxmatchsize","value":"110",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.1.url.0.cachekeyid",  "value":"/([^/]+)/",                                                    "config_file":"laguna-services.json"},
+  {"name":"services.1.url.0.cachekeymisc","value":"[^/]+/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)",                "config_file":"laguna-services.json"},
+  {"name":"services.1.url.0.options",     "value":"no-cache",                                                     "config_file":"laguna-services.json"},
+
+  {"name":"services.1.url.1.signature",   "value":"/sec(.*)/frag(.*)/video/([0-9])+/([0-9])+/(.*)(flv|ts)",       "config_file":"laguna-services.json"},
+  {"name":"services.1.url.1.maxmatchsize","value":"110",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.1.url.1.cachekeyid",  "value":"/([^/]+)/",                                                    "config_file":"laguna-services.json"},
+  {"name":"services.1.url.1.cachekeymisc","value":"[^/]+/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)",                "config_file":"laguna-services.json"},
+  {"name":"services.1.url.1.options",     "value":"no-cache",                                                     "config_file":"laguna-services.json"},
+
+  {"name":"services.1.url.2.signature",   "value":"^\\/video\\/[0-9]+\\/[0-9]+\\/.*?\\.mp4",                      "config_file":"laguna-services.json"},
+  {"name":"services.1.url.2.maxmatchsize","value":"100",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.1.url.2.cachekeyid",  "value":"/([^/]+)/([^/]+)/([^/]+)",                                     "config_file":"laguna-services.json"},
+  {"name":"services.1.url.2.cachekeymisc","value":"/[^/]+/[^/]+/[^/]+/(.*?\\.mp4)\\?",                            "config_file":"laguna-services.json"},
+  {"name":"services.1.url.2.options",     "value":"cache",                                                        "config_file":"laguna-services.json"},
+  
+
+  {"name":"services.2.target",            "value":"amazon",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.2.type",              "value":"video",                                                        "config_file":"laguna-services.json"},
+  {"name":"services.2.hostsignature.0",   "value":"(akamaihd.net|level3.net)",                                    "config_file":"laguna-services.json"},
+
+  {"name":"services.2.url.0.signature",   "value":"^/prod/.*?.+\\.ism/manifest",                                  "config_file":"laguna-services.json"},
+  {"name":"services.2.url.0.maxmatchsize","value":"110",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.2.url.0.cachekeyid",  "value":"/([^/])+/",                                                    "config_file":"laguna-services.json"},
+  {"name":"services.2.url.0.options",     "value":"mss-cache",                                                    "config_file":"laguna-services.json"},
+
+  {"name":"services.2.url.1.signature",   "value":"^/d/[^/]+/ondemand/[^/]+/prod/.*?.+\\.ism/manifest",           "config_file":"laguna-services.json"},
+  {"name":"services.2.url.1.maxmatchsize","value":"150",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.2.url.1.cachekeyid",  "value":"/([^/])+/",                                                    "config_file":"laguna-services.json"},
+  {"name":"services.2.url.1.options",     "value":"mss-cache",                                                    "config_file":"laguna-services.json"},
+    
+  {"name":"services.2.url.2.signature",   "value":"^/prod/.*?.+\\.ism/QualityLevels\\([0-9]",                     "config_file":"laguna-services.json"},
+  {"name":"services.2.url.2.maxmatchsize","value":"110",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.2.url.2.cachekeyid",  "value":"/([^/]+)/([^/]+)/",                                            "config_file":"laguna-services.json"},
+  {"name":"services.2.url.2.cachekeymisc","value":"/[^/]+/[^/]+/(.*)",                                            "config_file":"laguna-services.json"},
+  {"name":"services.2.url.2.options",     "value":"cache",                                                        "config_file":"laguna-services.json"},
+
+  {"name":"services.2.url.3.signature",   "value":"^/d/[^/]+/ondemand/[^/]+/prod/.*?(\\.ism)/QualityLevels\\(",   "config_file":"laguna-services.json"},
+  {"name":"services.2.url.3.maxmatchsize","value":"150",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.2.url.3.cachekeyid",  "value":"([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)",                      "config_file":"laguna-services.json"},
+  {"name":"services.2.url.3.cachekeymisc","value":"[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/(.*)",                           "config_file":"laguna-services.json"},
+  {"name":"services.2.url.3.options",     "value":"cache",                                                        "config_file":"laguna-services.json"},
+  
+  {"name":"services.3.target",            "value":"twitch",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.3.type",              "value":"livevideo",                                                    "config_file":"laguna-services.json"},
+  {"name":"services.3.hostsignature.0",   "value":"(twitch.tv|hls.ttvnw.net)",                                    "config_file":"laguna-services.json"},
+
+  {"name":"services.3.url.0.signature",   "value":"^/hls[0-9]([^/]+)/([^/]+)/([^/]+)/(.*?\\.m3u8)",               "config_file":"laguna-services.json"},
+  {"name":"services.3.url.0.maxmatchsize","value":"80",                                                           "config_file":"laguna-services.json"},
+  {"name":"services.3.url.0.cachekeyid",  "value":"/([^/]+)/([^/]+)/([^/]+)",                                     "config_file":"laguna-services.json"},
+  {"name":"services.3.url.0.options",     "value":"ts-cache",                                                     "config_file":"laguna-services.json"},
+    
+  {"name":"services.3.url.1.signature",   "value":"^/hls[0-9]([^/]+)/([^/]+)/([^/]+)/(.*?\\.ts)",                 "config_file":"laguna-services.json"},
+  {"name":"services.3.url.1.maxmatchsize","value":"80",                                                           "config_file":"laguna-services.json"},
+  {"name":"services.3.url.1.cachekeyid",  "value":"/([^/]+)/([^/]+)/",                                            "config_file":"laguna-services.json"},
+  {"name":"services.3.url.1.cachekeymisc","value":"/[^/]+/[^/]+/([^/]+)/(.*?\\.ts)",                              "config_file":"laguna-services.json"},
+  {"name":"services.3.url.1.options",     "value":"cache",                                                        "config_file":"laguna-services.json"},
+  
+  {"name":"services.4.target",            "value":"espn",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.4.type",              "value":"video",                                                        "config_file":"laguna-services.json"},
+  {"name":"services.4.hostsignature.0",   "value":"espn.com",                                                     "config_file":"laguna-services.json"},
+
+  {"name":"services.4.url.0.signature",   "value":"^/motion/[0-9]+/[0-9]+/[^/]+/.*?\\.m3u8",                      "config_file":"laguna-services.json"},
+  {"name":"services.4.url.0.maxmatchsize","value":"200",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.4.url.0.cachekeyid",  "value":"/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)",                     "config_file":"laguna-services.json"},
+  {"name":"services.4.url.0.cachekeymisc","value":"/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/(.*?\\.m3u8)",                  "config_file":"laguna-services.json"},
+  {"name":"services.4.url.0.options",     "value":"ts-cache",                                                     "config_file":"laguna-services.json"},
+    
+  {"name":"services.4.url.1.signature",   "value":"^/motion/[0-9]+/[0-9]+/[^/]+/hls/.*?\\.ts)",                   "config_file":"laguna-services.json"},
+  {"name":"services.4.url.1.maxmatchsize","value":"100",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.4.url.1.cachekeyid",  "value":"/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)",                     "config_file":"laguna-services.json"},
+  {"name":"services.4.url.1.cachekeymisc","value":"/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/(.*?\\.ts)",                    "config_file":"laguna-services.json"},
+  {"name":"services.4.url.1.options",     "value":"cache",                                                        "config_file":"laguna-services.json"},
+  
+  {"name":"services.5.target",            "value":"espn",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.5.type",              "value":"livevideo",                                                    "config_file":"laguna-services.json"},
+  {"name":"services.5.hostsignature.0",   "value":"espn.go.com",                                                  "config_file":"laguna-services.json"},
+  {"name":"services.5.hostsignature.1",   "value":"edgecastdns.net",                                              "config_file":"laguna-services.json"},
+  {"name":"services.5.httphdrmatchsignature.0", "value":"User-Agent:^((?!Roku).)*$",                              "config_file":"laguna-services.json"},
+
+  {"name":"services.5.url.0.signature",   "value":"^/hls/live/[0-9]+/[a-z]+/espn\\w+-\\w+-[0-9]+/.*?\\.ts",      "config_file":"laguna-services.json"},
+  {"name":"services.5.url.0.maxmatchsize","value":"100",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.5.url.0.cachekeyid",  "value":"/([^/]+)/([^/]+)/([^/]+)/([^/]+)",                            "config_file":"laguna-services.json"},
+  {"name":"services.5.url.0.cachekeymisc","value":"/[^/]+/[^/]+/[^/]+/[^/]+/([^/]+)/([^/]+)/(.*?\\.ts)",          "config_file":"laguna-services.json"},
+  {"name":"services.5.url.0.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+    
+  {"name":"services.5.url.1.signature",   "value":"^/slices/([^/]+)/([^/]+)/([^/]+)/(.*?\\.ts\\?)",              "config_file":"laguna-services.json"},
+  {"name":"services.5.url.1.maxmatchsize","value":"120",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.5.url.1.cachekeyid",  "value":"/([^/]+)/([^/]+)/([^/]+)/([^/]+)",                            "config_file":"laguna-services.json"},
+  {"name":"services.5.url.1.cachekeymisc","value":"/[^/]+/[^/]+/[^/]+/[^/]+/(.*?\\.ts)",                          "config_file":"laguna-services.json"},
+  {"name":"services.5.url.1.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+  
+  {"name":"services.5.url.2.signature",   "value":"^/ls[0-9]*/espn/[0-9]+/[0-9]+/[0-9]+/\\w+/\\w+/[0-9]+/[0-9]+/.*?\\.ts",    "config_file":"laguna-services.json"},
+  {"name":"services.5.url.2.maxmatchsize","value":"100",                                                                      "config_file":"laguna-services.json"},
+  {"name":"services.5.url.2.cachekeyid",  "value":"/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)",                         "config_file":"laguna-services.json"},
+  {"name":"services.5.url.2.cachekeymisc","value":"/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/([^/]+)/([^/]+)/([^/]+)/(.*?\\.ts)",  "config_file":"laguna-services.json"},
+  {"name":"services.5.url.2.options",     "value":"cache",                                                                    "config_file":"laguna-services.json"},
+
+  
+  {"name":"services.6.target",            "value":"nbcsports",                                                   "config_file":"laguna-services.json"},
+  {"name":"services.6.type",              "value":"livevideo",                                                   "config_file":"laguna-services.json"},
+  {"name":"services.6.hostsignature.0",   "value":"akamaihd.net",                                                "config_file":"laguna-services.json"},
+  {"name":"services.6.hostsignature.1",   "value":"nbcolympics.com",                                             "config_file":"laguna-services.json"},
+
+  {"name":"services.6.url.0.signature",   "value":"^/hls/live/[0-9]+/\\w+/\\w+/\\w+/[0-9]+/segment_[0-9]+\\.ts", "config_file":"laguna-services.json"},
+  {"name":"services.6.url.0.maxmatchsize","value":"100",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.6.url.0.cachekeyid",  "value":"/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)",    "config_file":"laguna-services.json"},
+  {"name":"services.6.url.0.cachekeymisc","value":"/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/(.*?\\.ts)",       "config_file":"laguna-services.json"},
+  {"name":"services.6.url.0.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+    
+  {"name":"services.6.url.1.signature",   "value":"^/nbc[0-9]+/[^/]+/\\S+/QualityLevels\\([0-9]+\\)/Fragments\\(", "config_file":"laguna-services.json"},
+  {"name":"services.6.url.1.maxmatchsize","value":"200",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.6.url.1.cachekeyid",  "value":"/([^/]+)/([^/]+)/([^/]+)",                                    "config_file":"laguna-services.json"},
+  {"name":"services.6.url.1.cachekeymisc","value":"/[^/]+/[^/]+/[^/]+/([^/]+)/([^\\?]+)",                        "config_file":"laguna-services.json"},
+  {"name":"services.6.url.1.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+  
+
+  {"name":"services.7.target",            "value":"nbcsports",                                                   "config_file":"laguna-services.json"},
+  {"name":"services.7.type",              "value":"video",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.7.hostsignature.0",   "value":"akamaihd.net",                                                "config_file":"laguna-services.json"},
+  {"name":"services.7.hostsignature.1",   "value":"nbcolympics.com",                                             "config_file":"laguna-services.json"},
+  {"name":"services.7.httphdrmatchsignature",   "value":"User-Agent:^((?!(Mozilla|Chrome)).)*$",                 "config_file":"laguna-services.json"},
+
+  {"name":"services.7.url.0.signature",   "value":"^/vod+/\\S+\\.ism/manifest",                                    "config_file":"laguna-services.json"},
+  {"name":"services.7.url.0.maxmatchsize","value":"200",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.7.url.0.cachekeyid",  "value":"/([^/]+)/",                                                   "config_file":"laguna-services.json"},
+  {"name":"services.7.url.0.options",     "value":"mss-cache",                                                   "config_file":"laguna-services.json"},
+
+  
+  {"name":"services.8.target",            "value":"nbcsports",                                                   "config_file":"laguna-services.json"},
+  {"name":"services.8.type",              "value":"video",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.8.hostsignature.0",   "value":"akamaihd.net",                                                "config_file":"laguna-services.json"},
+  {"name":"services.8.hostsignature.1",   "value":"nbcolympics.com",                                             "config_file":"laguna-services.json"},
+    
+  {"name":"services.8.url.0.signature",   "value":"^/vod/[^/]+/\\S+/QualityLevels\\([0-9]+\\)/Keyframes\\(",     "config_file":"laguna-services.json"},
+  {"name":"services.8.url.0.maxmatchsize","value":"220",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.8.url.0.cachekeyid",  "value":"/([^/]+)/([^/]+)/([^/]+)",                                    "config_file":"laguna-services.json"},
+  {"name":"services.8.url.0.cachekeymisc","value":"/[^/]+/[^/]+/[^/]+/([^/]+)/([^\\?]+)",                        "config_file":"laguna-services.json"},
+  {"name":"services.8.url.0.options",     "value":"no-cache",                                                    "config_file":"laguna-services.json"},
+  
+  {"name":"services.8.url.1.signature",   "value":"^/vod/[^/]+/\\S+/QualityLevels\\([0-9]+\\)/Fragments\\(",      "config_file":"laguna-services.json"},
+  {"name":"services.8.url.1.maxmatchsize","value":"220",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.8.url.1.cachekeyid",  "value":"/([^/]+)/([^/]+)/([^/]+)",                                    "config_file":"laguna-services.json"},
+  {"name":"services.8.url.1.cachekeymisc","value":"/[^/]+/[^/]+/[^/]+/([^/]+)/([^\\?]+)",                        "config_file":"laguna-services.json"},
+  {"name":"services.8.url.1.options",     "value":"no-cache",                                                    "config_file":"laguna-services.json"},
+
+  {"name":"services.8.url.2.signature",   "value":"^/[a-z]*/HD/video_sports/NBC.*nbcsports/[0-9]+/[0-9]+/.*\\.mp4\\.csmil/segment.*\\.ts",  "config_file":"laguna-services.json"},
+  {"name":"services.8.url.2.maxmatchsize","value":"220",                                                                                    "config_file":"laguna-services.json"},
+  {"name":"services.8.url.2.cachekeyid",  "value":"/([^/])/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/(\\w+.*\\.mp4\\.csmil)",                 "config_file":"laguna-services.json"},
+  {"name":"services.8.url.2.cachekeymisc","value":"/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/(.*?\\.ts)",                                  "config_file":"laguna-services.json"},
+  {"name":"services.8.url.2.options",     "value":"no-cache",                                                                               "config_file":"laguna-services.json"},
+
+  {"name":"services.8.url.3.signature",   "value":"^/vod/[^/]+/nbc-sports-live\\S+/QualityLevels\\([0-9]+\\)/Fragments\\(",  "config_file":"laguna-services.json"},
+  {"name":"services.8.url.3.maxmatchsize","value":"200",                                                                     "config_file":"laguna-services.json"},
+  {"name":"services.8.url.3.cachekeyid",  "value":"/([^/]+)/([^/]+)/([^/]+)",                                                "config_file":"laguna-services.json"},
+  {"name":"services.8.url.3.cachekeymisc","value":"/[^/]+/[^/]+/[^/]+/([^/]+)/([^\\?]+)",                                    "config_file":"laguna-services.json"},
+  {"name":"services.8.url.3.options",     "value":"no-cache",                                                                "config_file":"laguna-services.json"},
+  
+  
+  {"name":"services.9.target",            "value":"nbcsports",                                                   "config_file":"laguna-services.json"},
+  {"name":"services.9.type",              "value":"video",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.9.hostsignature.0",   "value":"akamaihd.net",                                                "config_file":"laguna-services.json"},
+  {"name":"services.9.hostsignature.1",   "value":"nbcolympics.com",                                             "config_file":"laguna-services.json"},
+  {"name":"services.9.httphdrmatchsignature",   "value":"User-Agent:^((?!(Mozilla|Chrome)).)*$",                 "config_file":"laguna-services.json"},
+
+  {"name":"services.9.url.0.signature",   "value":"^/vod+/\\S+\\.ism/manifest",                                  "config_file":"laguna-services.json"},
+  {"name":"services.9.url.0.maxmatchsize","value":"200",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.9.url.0.cachekeyid",  "value":"/([^/]+)/",                                                   "config_file":"laguna-services.json"},
+  {"name":"services.9.url.0.options",     "value":"mss-cache",                                                   "config_file":"laguna-services.json"},
+
+  
+  {"name":"services.10.target",            "value":"ytb",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.10.type",              "value":"video",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.10.hostsignature.0",   "value":"(googlevideo.com)+",                                          "config_file":"laguna-services.json"},
+  {"name":"services.10.hostsignature.1",   "value":"(youtube.com)+",                                              "config_file":"laguna-services.json"},
+  {"name":"services.10.httphdrmatchsignature",   "value":"User-Agent:^((?!Roku).)*$",                             "config_file":"laguna-services.json"},
+
+  {"name":"services.10.url.0.signature",   "value":"^/videoplayback/id/o-.*\\,",                                  "config_file":"laguna-services.json"},
+  {"name":"services.10.url.0.maxmatchsize","value":"145",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.10.url.0.cachekeyid",  "value":"/videoplayback/id/([^/]+)",                                   "config_file":"laguna-services.json"},
+  {"name":"services.10.url.0.cachekeymisc","value":"/itag/([^/]+)/.*?/go[a|v]p/(.*)/begin/.*?/file/([^\\?]+)",    "config_file":"laguna-services.json"},
+  {"name":"services.10.url.0.cachekeyrange","value":"\\,([^/]+)/begin/",                                          "config_file":"laguna-services.json"},
+  {"name":"services.10.url.0.options",     "value":"ytb-ckeymap-mp2ts-0_512",                                     "config_file":"laguna-services.json"},
+
+  {"name":"services.10.url.1.signature",   "value":"^/videoplayback/id/o-",                                       "config_file":"laguna-services.json"},
+  {"name":"services.10.url.1.maxmatchsize","value":"20",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.10.url.1.cachekeyid",  "value":"/videoplayback/id/([^/]+)",                                   "config_file":"laguna-services.json"},
+  {"name":"services.10.url.1.cachekeymisc","value":"/itag/([^/]+)/.*?/go[a|v]p/(.*)/begin/.*?/file/([^\\?]+)",    "config_file":"laguna-services.json"},
+  {"name":"services.10.url.1.cachekeyrange","value":"/slices\\%3D([^/]+)/begin/",                                 "config_file":"laguna-services.json"},
+  {"name":"services.10.url.1.options",     "value":"ytb-ckeymap-mp2ts-0_512",                                     "config_file":"laguna-services.json"},
+
+  {"name":"services.10.url.2.signature",   "value":"^/videoplayback/id/[0-9a-z]{2}.*go[a|v]p/slices[^/]+/go[a|v]p/", "config_file":"laguna-services.json"},
+  {"name":"services.10.url.2.maxmatchsize","value":"120",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.10.url.2.cachekeyid",  "value":"/videoplayback/id/([^/]+)",                                   "config_file":"laguna-services.json"},
+  {"name":"services.10.url.2.cachekeymisc","value":"/itag/([^/]+)/.*?/go[a|v]p/(.*)/begin/.*?/file/([^\\?]+)",    "config_file":"laguna-services.json"},
+  {"name":"services.10.url.2.cachekeyrange","value":"/go[a|v]p/.*\\,([^/]+)/go[a|v]p/.*\\,([^/]+)/begin/",        "config_file":"laguna-services.json"},
+  {"name":"services.10.url.2.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.10.url.3.signature",   "value":"^/videoplayback/id/[0-9a-z]{2}.*go[a|v]p/slices.*\\,[^/]+/begin", "config_file":"laguna-services.json"},
+  {"name":"services.10.url.3.maxmatchsize","value":"120",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.10.url.3.cachekeyid",  "value":"/videoplayback/id/([^/]+)",                                   "config_file":"laguna-services.json"},
+  {"name":"services.10.url.3.cachekeyrange","value":"/go[a|v]p/slices.*\\,([^/]+)/begin",                         "config_file":"laguna-services.json"},
+  {"name":"services.10.url.3.cachekeymisc","value":"/itag/([^/]+)/.*?/go[a|v]p/(.*)/begin/.*?/file/([^\\?]+)",    "config_file":"laguna-services.json"},
+  {"name":"services.10.url.3.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.10.url.4.signature",   "value":"^/videoplayback/id/[0-9a-z]{2}.*go[a|v]p/slices[^/]+/begin",  "config_file":"laguna-services.json"},
+  {"name":"services.10.url.4.maxmatchsize","value":"120",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.10.url.4.cachekeyid",  "value":"/videoplayback/id/([^/]+)",                                   "config_file":"laguna-services.json"},
+  {"name":"services.10.url.4.cachekeyrange","value":"/go[a|v]p/slices\\%3D([^/]+)/begin",                         "config_file":"laguna-services.json"},
+  {"name":"services.10.url.4.cachekeymisc","value":"/itag/([^/]+)/.*?/go[a|v]p/(.*)/begin/.*?/file/([^\\?]+)'",   "config_file":"laguna-services.json"},
+  {"name":"services.10.url.4.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.10.url.5.signature",   "value":"^/videoplayback.*?[\\?\\&]id=[a-z0-9]{2}",                    "config_file":"laguna-services.json"},
+  {"name":"services.10.url.5.maxmatchsize","value":"700",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.10.url.5.cachekeyid",  "value":"[\\&\\?]id=([^\\&]+)",                                        "config_file":"laguna-services.json"},
+  {"name":"services.10.url.5.cachekeyrange","value":"[\\&\\?]range=([^\\&]+)",                                    "config_file":"laguna-services.json"},
+  {"name":"services.10.url.5.cachekeymisc","value":"[\\&\\?]itag=([^\\&]+)",                                      "config_file":"laguna-services.json"},
+  {"name":"services.10.url.5.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.10.url.6.signature",   "value":"(^/videoplayback\\?)",                                        "config_file":"laguna-services.json"},
+  {"name":"services.10.url.6.maxmatchsize","value":"20",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.10.url.6.cachekeyid",  "value":"[\\&\\?]id=o-([^\\&]+)",                                      "config_file":"laguna-services.json"},
+  {"name":"services.10.url.6.cachekeyrange","value":"[\\&\\?]range=([^\\&]+)",                                    "config_file":"laguna-services.json"},
+  {"name":"services.10.url.6.cachekeymisc","value":"'[\\&\\?]itag=([^\\&]+)",                                     "config_file":"laguna-services.json"},
+  {"name":"services.10.url.6.options",     "value":"ytb-ckeymap-mp4-0_736",                                       "config_file":"laguna-services.json"},
+
+
+  {"name":"services.11.target",            "value":"ytb",                                                         "config_file":"laguna-services.json"},
+ 
+  {"name":"services.11.type",              "value":"video",                                                       "config_file":"laguna-services.json"},
+  
+  {"name":"services.11.hostsignature.0",   "value":"(googlevideo.com)+",                                          "config_file":"laguna-services.json"},
+  
+  {"name":"services.11.hostsignature.1",   "value":"(youtube.com)+",                                              "config_file":"laguna-services.json"},
+  
+  {"name":"services.11.referersignature.0", "value":"/watch\\?v=([^\\&]+)\";\"/embed/([^\\&]+)",                    "config_file":"laguna-services.json"},
+
+  {"name":"services.11.url.0.signature",   "value":"(^/videoplayback\\?).*?(c=[Ww][Ee][Bb])",                     "config_file":"laguna-services.json"},
+  {"name":"services.11.url.0.maxmatchsize","value":"950",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.11.url.0.contextid",   "value":"[\\&\\?]cpn=([^\\&]+)",                                       "config_file":"laguna-services.json"},
+  {"name":"services.11.url.0.cachekeymisc","value":"[\\&\\?]itag=([^\\&]+)",                                      "config_file":"laguna-services.json"},
+  {"name":"services.11.url.0.cachekeyrange","value":"[\\&\\?]range=([^\\&]+)",                                    "config_file":"laguna-services.json"},
+  {"name":"services.11.url.0.options",     "value":"ytb-ckeymap-mp2ts-0_512",                                     "config_file":"laguna-services.json"},
+
+  {"name":"services.11.session.0.signature", "value":"(^/stream_204\\?)",                                         "config_file":"laguna-services.json"},
+  {"name":"services.11.session.0.maxmatchsize", "value":"16",                                                     "config_file":"laguna-services.json"},
+  {"name":"services.11.session.0.contextid", "value":"[\\&\\?]cpn=([^\\&]+)",                                     "config_file":"laguna-services.json"},
+  {"name":"services.11.session.0.cachkeyid", "value":"[\\&\\?]docid=([^\\&]+)",                                   "config_file":"laguna-services.json"},
+
+  {"name":"services.11.session.1.signature", "value":"(^/ptracking\\?)",                                          "config_file":"laguna-services.json"},
+  {"name":"services.11.session.1.maxmatchsize", "value":"16",                                                     "config_file":"laguna-services.json"},
+  {"name":"services.11.session.1.contextid", "value":"[\\&\\?]cpn=([^\\&]+)",                                     "config_file":"laguna-services.json"},
+  {"name":"services.11.session.1.cachkeyid", "value":"[\\&\\?]video_id=([^\\&]+)",                                "config_file":"laguna-services.json"},
+
+
+  {"name":"services.12.target",            "value":"hulu",                                                        "config_file":"laguna-services.json"},
+  {"name":"services.12.type",              "value":"video",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.12.hostsignature.0",   "value":"akamaihd.net",                                                "config_file":"laguna-services.json"},
+  {"name":"services.12.hostsignature.1",   "value":"hulu.com",                                                    "config_file":"laguna-services.json"},
+  {"name":"services.12.hostsignature.2",   "value":"huluedgecast.com",                                            "config_file":"laguna-services.json"},
+
+  {"name":"services.12.url.0.signature",   "value":"^/hulu[0-9]+/[^/]+/[^/]+/agave[a-zA-Z0-9].*(?<!\\.enc)/.*?\\?.*?autowidevine=",  "config_file":"laguna-services.json"},
+  {"name":"services.12.url.0.maxmatchsize","value":"100",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.12.url.0.cachekeyid",  "value":"([^/]+)/[^/]+/([^/]+)/",                                      "config_file":"laguna-services.json"},
+  {"name":"services.12.url.0.cachekeymisc","value":"[^/]+/([^/]+)/[^/]+/([^/]+)/([^\\?]+)",                       "config_file":"laguna-services.json"},
+  {"name":"services.12.url.0.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.12.url.1.signature",   "value":"^/hulu[0-9]+/[^/]+/[^/]+/agave[a-zA-Z0-9].*(?<!\\.enc)\\?.*?autowidevine=",      "config_file":"laguna-services.json"},
+  {"name":"services.12.url.1.maxmatchsize","value":"100",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.12.url.1.cachekeyid",  "value":"([^/]+)/[^/]+/([^/]+)",                                       "config_file":"laguna-services.json"},
+  {"name":"services.12.url.1.cachekeymisc","value":"[^/]+/([^/]+)/[^/]+/([^\\?]+)",                               "config_file":"laguna-services.json"},
+  {"name":"services.12.url.1.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.12.url.2.signature",   "value":"^/httpls/[0-9]+/[^/]+/agave[a-zA-Z0-9].*?[^/]+/[^\\?]+\\?",   "config_file":"laguna-services.json"},
+  {"name":"services.12.url.2.maxmatchsize","value":"90",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.12.url.2.cachekeyid",  "value":"([^/]+)/[^/]+/([^/]+)/",                                      "config_file":"laguna-services.json"},
+  {"name":"services.12.url.2.cachekeymisc","value":"[^/]+/([^/]+)/[^/]+/([^/]+)/([^\\?]+)",                       "config_file":"laguna-services.json"},
+  {"name":"services.12.url.2.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.12.url.3.signature",   "value":"^/httpls/[0-9]+/[^/]+/agave[a-zA-Z0-9].*?\\?",                "config_file":"laguna-services.json"},
+  {"name":"services.12.url.3.maxmatchsize","value":"90",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.12.url.3.cachekeyid",  "value":"([^/]+)/[^/]+/([^/]+)/",                                      "config_file":"laguna-services.json"},
+  {"name":"services.12.url.3.cachekeymisc","value":"[^/]+/([^/]+)/[^/]+/([^\\?]+)",                               "config_file":"laguna-services.json"},
+  {"name":"services.12.url.3.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.12.url.4.signature",   "value":"^/[0-9]+/[^/]+/agave[a-zA-Z0-9].*?[^/]+/[^\\?]+\\?",          "config_file":"laguna-services.json"},
+  {"name":"services.12.url.4.maxmatchsize","value":"90",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.12.url.4.cachekeyid",  "value":"[^/]+/([^/]+)",                                               "config_file":"laguna-services.json"},
+  {"name":"services.12.url.4.cachekeymisc","value":"([^/]+)/[^/]+/([^/]+)/([^\\?]+)",                             "config_file":"laguna-services.json"},
+  {"name":"services.12.url.4.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.12.url.5.signature",   "value":"^/[0-9]+/[^/]+/agave[a-zA-Z0-9].*?\\?",                       "config_file":"laguna-services.json"},
+  {"name":"services.12.url.5.maxmatchsize","value":"90",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.12.url.5.cachekeyid",  "value":"[^/]+/([^/]+)",                                               "config_file":"laguna-services.json"},
+  {"name":"services.12.url.5.cachekeymisc","value":"([^/]+)/[^/]+/([^\\?]+)",                                     "config_file":"laguna-services.json"},
+  {"name":"services.12.url.5.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+ 
+  {"name":"services.13.target",            "value":"ntflx",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.13.type",              "value":"video",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.13.hostsignature.0",   "value":"netflix.com",                                                 "config_file":"laguna-services.json"},
+  
+  {"name":"services.13.url.0.signature",   "value":"^/range/.*?([\\?]o=AQ).*?v=.*?t='",                           "config_file":"laguna-services.json"},
+  {"name":"services.13.url.0.maxmatchsize","value":"250",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.13.url.0.cachekeyid",  "value":"[\\&\\?]o=([^\\&]+)",                                         "config_file":"laguna-services.json"},
+  {"name":"services.13.url.0.cachekeyrange","value":"^/range/([^\\&\\?]+)",                                       "config_file":"laguna-services.json"},
+  {"name":"services.13.url.0.options",     "value":"ntflx-ckeymap-mp4-0_256",                                     "config_file":"laguna-services.json"},
+
+  {"name":"services.13.url.1.signature",   "value":"^//range/.*?([\\?]o=AQ).*?v=.*?t=",                           "config_file":"laguna-services.json"},
+  {"name":"services.13.url.1.maxmatchsize","value":"250",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.13.url.1.cachekeyid",  "value":"[\\&\\?]o=([^\\&]+)",                                         "config_file":"laguna-services.json"},
+  {"name":"services.13.url.1.cachekeyrange","value":"^//range/([^\\&\\?]+)",                                      "config_file":"laguna-services.json"},
+  {"name":"services.13.url.1.options",     "value":"ntflx-ckeymap-mp4-0_256",                                     "config_file":"laguna-services.json"},
+
+  {"name":"services.13.url.2.signature",   "value":"^/\\?o=AQ.*?v=.*?t=",                                         "config_file":"laguna-services.json"},
+  {"name":"services.13.url.2.maxmatchsize","value":"250",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.13.url.2.cachekeyid",  "value":"[\\&\\?]o=([^\\&]+)",                                         "config_file":"laguna-services.json"},
+  {"name":"services.13.url.2.options",     "value":"ntflx-ckeymap-mp4-0_256",                                     "config_file":"laguna-services.json"},
+
+  {"name":"services.14.target",            "value":"ios",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.14.type",              "value":"osupdate",                                                    "config_file":"laguna-services.json"},
+  {"name":"services.14.hostsignature.0",   "value":"apple.com",                                                   "config_file":"laguna-services.json"},
+ 
+  {"name":"services.14.url.0.signature",   "value":"^/iOS[0-9].*?.+\\.(zip|ipsw)",                                "config_file":"laguna-services.json"},
+  {"name":"services.14.url.0.maxmatchsize","value":"250",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.14.url.0.cachekeyid",  "value":"([^/]+)/([^/]+)/",                                            "config_file":"laguna-services.json"},
+  {"name":"services.14.url.0.cachekeymisc","value":"[^/]+/[^/]+/.*?(.+\\.(zip|ipsw))",                            "config_file":"laguna-services.json"},
+  {"name":"services.14.url.0.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+
+  {"name":"services.15.target",            "value":"windows",                                                     "config_file":"laguna-services.json"},
+  {"name":"services.15.type",              "value":"osupdate",                                                    "config_file":"laguna-services.json"},
+  {"name":"services.15.hostsignature.0",   "value":"windowsupdate.com",                                           "config_file":"laguna-services.json"},
+  {"name":"services.15.hostsignature.1",   "value":"download.microsoft.com",                                      "config_file":"laguna-services.json"},
+  {"name":"services.15.hostsignature.0",   "value":"dlservice.microsoft.com",                                     "config_file":"laguna-services.json"},
+  
+  {"name":"services.15.url.0.signature",   "value":"^/[a-zA-Z0-9]+/msdownload/update/(?!(others/))",              "config_file":"laguna-services.json"},
+  {"name":"services.15.url.0.maxmatchsize","value":"35",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.15.url.0.cachekeyid",  "value":"([^/]+)/([^/]+)/",                                            "config_file":"laguna-services.json"},
+  {"name":"services.15.url.0.cachekeymisc","value":"[^/]+/[^/]+/([^/]+)/(.*)",                                    "config_file":"laguna-services.json"},
+  {"name":"services.15.url.0.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.15.url.1.signature",   "value":"^/download/[a-zA-Z0-9]+/[a-zA-Z0-9]+/[a-zA-Z0-9]+/",          "config_file":"laguna-services.json"},
+  {"name":"services.15.url.1.maxmatchsize","value":"20",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.15.url.1.cachekeyid",  "value":"([^/]+)/([^/]+)/",                                            "config_file":"laguna-services.json"},
+  {"name":"services.15.url.1.cachekeymisc","value":"[^/]+/[^/]+/([^/]+)/([^/]+)/(.*)",                            "config_file":"laguna-services.json"},
+  {"name":"services.15.url.1.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.15.url.2.signature",   "value":"^/msdownload/update/software/(?!(dflt/|updt/2011/05/|svpk/2011/0[2-3]/|secu/2011/06/|crup/2010/02/))",  "config_file":"laguna-services.json"},
+  {"name":"services.15.url.2.maxmatchsize","value":"45",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.15.url.2.cachekeyid",  "value":"/([^/]+)/([^/]+)/",                                           "config_file":"laguna-services.json"},
+  {"name":"services.15.url.2.cachekeymisc","value":"/[^/]+/[^/]+/(.*)",                                           "config_file":"laguna-services.json"},
+  {"name":"services.15.url.2.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+  
+  {"name":"services.16.target",            "value":"android",                                                     "config_file":"laguna-services.json"},
+  {"name":"services.16.type",              "value":"osupdate",                                                    "config_file":"laguna-services.json"},
+  {"name":"services.16.hostsignature.0",   "value":"android.clients.google.com",                                  "config_file":"laguna-services.json"},
+ 
+  {"name":"services.16.url.0.signature",   "value":"^/packages/(data|ota)",                                       "config_file":"laguna-services.json"},
+  {"name":"services.16.url.0.maxmatchsize","value":"15",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.16.url.0.cachekeyid",  "value":"/([^/]+)/([^/]+)/",                                           "config_file":"laguna-services.json"},
+  {"name":"services.16.url.0.cachekeymisc","value":"/[^/]+/[^/]+/.*?(.+\\.zip)",                                  "config_file":"laguna-services.json"},
+  {"name":"services.16.url.0.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+   
+  {"name":"services.17.target",            "value":"hbogo",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.17.type",              "value":"video",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.17.hostsignature.0",   "value":"hbogo.com",                                                   "config_file":"laguna-services.json"},
+ 
+  {"name":"services.17.url.0.signature",   "value":"^/videos/PRO12/e2/hbo/feature/\\d+/\\d+/",                    "config_file":"laguna-services.json"},
+  {"name":"services.17.url.0.maxmatchsize","value":"300",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.17.url.0.cachekeyid",  "value":"/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/(\\d+)/(\\d+)/",     "config_file":"laguna-services.json"},
+  {"name":"services.17.url.0.cachekeymisc","value":"/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/\\d+/\\d+/(\\S+)/(\\S+)",      "config_file":"laguna-services.json"},
+  {"name":"services.17.url.0.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+ 
+  {"name":"services.17.url.1.signature",   "value":"^/videos/PRO12/e2/hbo/feature/\\d+/",                         "config_file":"laguna-services.json"},
+  {"name":"services.17.url.1.maxmatchsize","value":"300",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.17.url.1.cachekeyid",  "value":"'/([^/]+)/([^/]+)/([^/]+)/([^/]+)/([^/]+)/(\\d+)/",           "config_file":"laguna-services.json"},
+  {"name":"services.17.url.1.cachekeymisc","value":"/[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/\\d+/(\\S+)/(\\S+)",           "config_file":"laguna-services.json"},
+  {"name":"services.17.url.1.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+ 
+  {"name":"services.17.url.2.signature",   "value":"^/hlsvideos/.+/hbo/feature/.+/.+/.+/.+/\\w+\\.ts",            "config_file":"laguna-services.json"},
+  {"name":"services.17.url.2.maxmatchsize","value":"300",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.17.url.2.cachekeyid",  "value":"/(.+)/(.+)/(.+)/(.+)/(.+)/(.+)/(.+)/.+$",                     "config_file":"laguna-services.json"},
+  {"name":"services.17.url.2.cachekeymisc","value":".+/(.+)/(.+$)",                                               "config_file":"laguna-services.json"},
+  {"name":"services.17.url.2.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+ 
+  {"name":"services.17.url.3.signature",   "value":"^/hlsvideos/.+/hbo/feature/.+/.+/.+/\\w+\\.ts",               "config_file":"laguna-services.json"},
+  {"name":"services.17.url.3.maxmatchsize","value":"300",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.17.url.3.cachekeyid",  "value":"/(.+)/(.+)/(.+)/(.+)/(.+)/(.+)/.+$",                          "config_file":"laguna-services.json"},
+  {"name":"services.17.url.3.cachekeymisc","value":".+/(.+)/(.+$)",                                               "config_file":"laguna-services.json"},
+  {"name":"services.17.url.3.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+ 
+  {"name":"services.17.url.4.signature",   "value":"^/videos/.+/.+/hbo/feature/.+/.+/.+/.+/\\w+\\.ts",            "config_file":"laguna-services.json"},
+  {"name":"services.17.url.4.maxmatchsize","value":"300",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.17.url.4.cachekeyid",  "value":"/(.+)/(.+)/(.+)/(hbo)/(feature)/(.+)/(.+)/(.+)/.+$",          "config_file":"laguna-services.json"},
+  {"name":"services.17.url.4.cachekeymisc","value":".+/(.+)/(.+$)",                                               "config_file":"laguna-services.json"},
+  {"name":"services.17.url.4.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+ 
+  {"name":"services.17.url.5.signature",   "value":"^/videos/.+/.+/hbo/feature/.+/.+/.+/.+/\\w+\\.aac",           "config_file":"laguna-services.json"},
+  {"name":"services.17.url.5.maxmatchsize","value":"300",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.17.url.5.cachekeyid",  "value":"/(.+)/(.+)/(.+)/(hbo)/(feature)/(.+)/(.+)/(.+)/.+$",          "config_file":"laguna-services.json"},
+  {"name":"services.17.url.5.cachekeymisc","value":".+/(.+)/(.+$)",                                               "config_file":"laguna-services.json"},
+  {"name":"services.17.url.5.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+ 
+  {"name":"services.17.url.6.signature",   "value":"^/videos/.+/.+/hbo/feature/.+/.+/.+/\\w+\\.ts",               "config_file":"laguna-services.json"},
+  {"name":"services.17.url.6.maxmatchsize","value":"300",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.17.url.6.cachekeyid",  "value":"/(.+)/(.+)/(.+)/(hbo)/(feature)/(.+)/(.+)/.+$",               "config_file":"laguna-services.json"},
+  {"name":"services.17.url.6.cachekeymisc","value":".+/(.+)/(.+$)",                                               "config_file":"laguna-services.json"},
+  {"name":"services.17.url.6.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+ 
+  {"name":"services.17.url.7.signature",   "value":"^/videos/.+/.+/hbo/feature/.+/.+/.+/\\w+\\.aac",              "config_file":"laguna-services.json"},
+  {"name":"services.17.url.7.maxmatchsize","value":"300",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.17.url.7.cachekeyid",  "value":"/(.+)/(.+)/(.+)/(hbo)/(feature)/(.+)/(.+)/.+$",               "config_file":"laguna-services.json"},
+  {"name":"services.17.url.7.cachekeymisc","value":".+/(.+)/(.+$)",                                               "config_file":"laguna-services.json"},
+  {"name":"services.17.url.7.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+ 
+  {"name":"services.17.url.8.signature",   "value":"^/videos/.+/hbo/feature/.+/\\w+.ism/manifest",                "config_file":"laguna-services.json"},
+  {"name":"services.17.url.8.maxmatchsize","value":"110",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.17.url.8.cachekeyid",  "value":"/([^/]+)/",                                                   "config_file":"laguna-services.json"},
+  {"name":"services.17.url.8.options",     "value":"mss-cache",                                                   "config_file":"laguna-services.json"},
+
+  
+  {"name":"services.18.target",            "value":"vimeo",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.18.type",              "value":"video",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.18.hostsignature.0",   "value":"(vimeocdn.com|vimeo.com|vimeo)",                              "config_file":"laguna-services.json"},
+ 
+  {"name":"services.18.url.0.signature",   "value":"^/[^/]+/[^/]+/.*?\\.(mp4|flv)\\?.*?token[2|=](.*?\\&aktimeoffset\\=|.*?\\&aksessionid\\=|)",  "config_file":"laguna-services.json"},
+  {"name":"services.18.url.0.maxmatchsize","value":"140",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.18.url.0.cachekeyid",  "value":"/([^/]+)/([^/]+)/(.*?\\.(mp4|flv))\\?",                       "config_file":"laguna-services.json"},
+  {"name":"services.18.url.0.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.18.url.1.signature",   "value":"^/s3.vimeo.com/.*?\\.(mp4|flv)\\?.*?AWSAccessKeyId\\=.*?\\&aktimeoffset\\=",  "config_file":"laguna-services.json"},
+  {"name":"services.18.url.1.maxmatchsize","value":"140",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.18.url.1.cachekeyid",  "value":"/(.*?\\.(mp4|flv))\\?",                                       "config_file":"laguna-services.json"},
+  {"name":"services.18.url.1.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.18.url.2.signature",   "value":"^/video/[^/]+/.*?\\.mp4Frag.*?\\.ts",                         "config_file":"laguna-services.json"},
+  {"name":"services.18.url.2.maxmatchsize","value":"50",                                                          "config_file":"laguna-services.json"},
+  {"name":"services.18.url.2.cachekeyid",  "value":"([^/]+)/([^/]+)/(.*?\\.ts)",                                  "config_file":"laguna-services.json"},
+  {"name":"services.18.url.2.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  
+  {"name":"services.19.target",            "value":"liveleak",                                                    "config_file":"laguna-services.json"},
+  {"name":"services.19.type",              "value":"video",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.19.hostsignature.0",   "value":"liveleak",                                                    "config_file":"laguna-services.json"},
+ 
+  {"name":"services.19.url.0.signature",   "value":"^/80281E/.*?(/LiveLeak-dot-com-).*?(\\.mp4|\\.ogg)\\?",       "config_file":"laguna-services.json"},
+  {"name":"services.19.url.0.maxmatchsize","value":"150",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.19.url.0.cachekeyid",  "value":"/(.*?.+)\\?",                                                 "config_file":"laguna-services.json"},
+  {"name":"services.19.url.0.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  
+  {"name":"services.20.target",            "value":"ustream",                                                     "config_file":"laguna-services.json"},
+  {"name":"services.20.type",              "value":"video",                                                       "config_file":"laguna-services.json"},
+  {"name":"services.20.hostsignature.0",   "value":"ustream",                                                     "config_file":"laguna-services.json"},
+ 
+  {"name":"services.20.url.0.signature",   "value":"^/sjc.*?(/ustreamVideo/[^/]+/streams/live).*?\\.flv(\\?|)",   "config_file":"laguna-services.json"},
+  {"name":"services.20.url.0.maxmatchsize","value":"120",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.20.url.0.cachekeyid",  "value":"/(.*?.+)/",                                                   "config_file":"laguna-services.json"},
+  {"name":"services.20.url.0.cachekeymisc","value":"/.*?.+/(.*?\\.flv)(\\?|)",                                    "config_file":"laguna-services.json"},
+  {"name":"services.20.url.0.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.20.url.1.signature",   "value":"^/sjc.*?(/ustreamVideo/[^/]+//streams/live).*?\\.flv(\\?|)",  "config_file":"laguna-services.json"},
+  {"name":"services.20.url.1.maxmatchsize","value":"120",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.20.url.1.cachekeyid",  "value":"/(.*?.+)//([^/]+)/",                                          "config_file":"laguna-services.json"},
+  {"name":"services.20.url.1.cachekeymisc","value":"/.*?.+/(.*?\\.flv)(\\?|)",                                    "config_file":"laguna-services.json"},
+  {"name":"services.20.url.1.options",     "value":"cache",                                                       "config_file":"laguna-services.json"},
+
+  {"name":"services.20.url.1.signature",   "value":"^/sjc.*?(/live_[0-9]/chunk).*?\\.ts(\\?|)",                   "config_file":"laguna-services.json"},
+  {"name":"services.20.url.1.maxmatchsize","value":"120",                                                         "config_file":"laguna-services.json"},
+  {"name":"services.20.url.1.cachekeyid",  "value":"/(.*?.+)/",                                                   "config_file":"laguna-services.json"},
+  {"name":"services.20.url.1.cachekeymisc","value":"/.*?.+/(.*?\\.ts)(\\?|)",                                     "config_file":"laguna-services.json"},
+  {"name":"services.20.url.1.options",     "value":"cache",                                                       "config_file":"laguna-services.json"}
+
+ ]
+}
