@@ -1,0 +1,17 @@
+These plugins Provide access to th trafficserver cache from a web browser.
+
+cache-hndl-v1.so is activated by modifing the plugin.config as:
+
+# activate cache-hndl-v1.so plugin ...
+cache-hndl-v1.so cacheurl.config
+
+cache-hndl-v2.so and cache-hndl-v3.so are activated from the remap.config as:
+
+# activate cache-hndl-v3.so plugin ...
+map http://127.0.0.1:9090/cache-handler/ http://127.0.0.1:9090/cache-handler/ \
+	@plugin=cache-hndl-v3.so @pparam=cacheurl.config
+
+map http://129.75.25.179:9090/cache-handler/ http://129.75.25.179:9090/cache-handler/ \
+	@plugin=cache-hndl-v3.so @pparam=cacheurl.config
+
+Only activate one of the plugin at a time!!!
