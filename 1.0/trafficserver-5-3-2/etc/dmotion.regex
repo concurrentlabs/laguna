@@ -1,0 +1,5 @@
+.*/tcshost/(.*)/tcskey/.*//(.*)ts$    http://$1/$2ts
+.*/tcshost/(.*)/tcskey/.*//(.*)flv$   http://$1/$2flv
+.*/tcshost/(.*)/tcskey/.*//(.*)mnft$  http://$1/$2mnft
+
+.*crossdomain.xml$ http://www.dailymotion.com/crossdomain.xml
