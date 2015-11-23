@@ -11,7 +11,7 @@ cache-hndl-v2.so and cache-hndl-v3.so are activated from the remap.config as:
 map http://127.0.0.1:9090/cache-handler/ http://127.0.0.1:9090/cache-handler/ \
 	@plugin=cache-hndl-v3.so @pparam=cacheurl.config
 
-map http://129.75.25.179:9090/cache-handler/ http://129.75.25.179:9090/cache-handler/ \
+map http://10.75.25.179:9090/cache-handler/ http://10.75.25.179:9090/cache-handler/ \
 	@plugin=cache-hndl-v3.so @pparam=cacheurl.config
 
 Only activate one of the plugin at a time!!!
