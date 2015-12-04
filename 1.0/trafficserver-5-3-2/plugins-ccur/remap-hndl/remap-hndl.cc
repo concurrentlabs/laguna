@@ -141,9 +141,9 @@ TSRemapStatus TSRemapDoRemap(void *ih, TSHttpTxn rh, TSRemapRequestInfo * rri)
     }
 
     //*** set remap url ***
-    string edge_url = global_origin_remap_table.construct_remap_url(string(PLUGIN_NAME), url);
-    const char * start = &edge_url[0];
-    const char * end   = &start[edge_url.length()];
+    string origin_url = global_origin_remap_table.construct_remap_url(string(PLUGIN_NAME), url);
+    const char * start = &origin_url[0];
+    const char * end   = &start[origin_url.length()];
     if(TSUrlParse(rri->requestBufp, rri->requestUrl, &start, end) == TS_PARSE_ERROR)
     {
         TSHttpTxnSetHttpRetStatus(rh, TS_HTTP_STATUS_INTERNAL_SERVER_ERROR);
