@@ -31,36 +31,49 @@ using namespace std;
 
 #define PLUGIN_NAME "cache-hndl"
 
-// #define ATS_6_0_0 1
+// #define __ATS_6_0_0__ 1
+
+static int CacheHandler(TSCont contp, TSEvent event, void * edata);
+
+static int handleCacheScan(TSEvent event, void * edata);
 
 //*******************************************************************************
+// struct: cache_scan_state_t
+//
+// desctiption: encapsulate cache scan functionality.
 //*******************************************************************************
 struct cache_scan_state_t
 {
+    TSCont contp;
+
     TSVConn net_vc;
-    TSVIO read_vio;
-    TSVIO write_vio;
 
     TSIOBuffer req_buffer;
     TSIOBuffer resp_buffer;
     TSIOBufferReader resp_reader;
 
-    TSCont contp;
+    TSVIO read_vio;
+    TSVIO write_vio;
 
-    TSHttpTxn txnp;
-
-    string delete_key;
-
-    uint32_t total_items;
-    int64_t  total_bytes;
+    int64_t total_bytes;
 
     //***************************************************************************
+    // function: constructor
+    //
+    // description: setup ats objects.
     //***************************************************************************
-    cache_scan_state_t(TSHttpTxn txnp) :
-        txnp(txnp), total_items(0), total_bytes(0)
+    cache_scan_state_t() :
+        contp(TSContCreate(CacheHandler, TSMutexCreate())),
+        req_buffer(TSIOBufferCreate()),
+        resp_buffer(TSIOBufferCreate()),
+        resp_reader(TSIOBufferReaderAlloc(resp_buffer)),
+        total_bytes(0)
     { }
 
     //***************************************************************************
+    // function: destructor
+    //
+    // description: close and free ats objects.
     //***************************************************************************
     ~cache_scan_state_t()
     {
@@ -68,77 +81,155 @@ struct cache_scan_state_t
 
         if(net_vc)
             TSVConnShutdown(net_vc, 1, 1);
-
         if(req_buffer)
             TSIOBufferDestroy(req_buffer);
         if(resp_buffer)
             TSIOBufferDestroy(resp_buffer);
-
         if(contp)
             TSContDestroy(contp);
+        if(resp_reader)
+            TSIOBufferReaderFree(resp_reader);
+
+        TSDebug(PLUGIN_NAME, "Exit: %s.", __FUNCTION__);
+        return;
+    }
+
+    //***************************************************************************
+    // function: accept
+    //
+    // description: perform http accept.
+    //***************************************************************************
+    void accept(void * v)
+    {
+        TSDebug(PLUGIN_NAME, "Enter: %s.", __FUNCTION__);
+
+        net_vc = (TSVConn) v;
+        read_vio  = TSVConnRead(net_vc, contp, req_buffer, INT64_MAX);
+        write_vio = TSVConnWrite(net_vc, contp, resp_reader, INT64_MAX);
 
         TSDebug(PLUGIN_NAME, "Exit: %s.", __FUNCTION__);
         return;
     }
 };
 
+//*******************************************************************************
+// class: delete_keys_t
+//
+// desctiption: encapsutate cache delete functionality.
+//*******************************************************************************
+class delete_keys_t
+{
+    public:
+    //***************************************************************************
+    // function: constructor
+    //
+    // description: split string into list of keys.
+    //***************************************************************************
+    delete_keys_t(string & s)
+    {
+        if(s.length())
+        {
+            // *** strip '&' and '=on' and remove escape sequences ***
+            boost::regex re("[&]");
+            boost::sregex_token_iterator p(s.cbegin(), s.cend(), re, -1);
+            boost::sregex_token_iterator e;
+            for( ; p != e; ++p)
+            {
+                string key(p->str().substr(0, p->length() - 3));
+                unescapeStr(key);
+                m_keys.push_back(move(key));
+            }
+        }
+    }
+
+    //***************************************************************************
+    //***************************************************************************
+    ~delete_keys_t() { }
+
+    //***************************************************************************
+    //***************************************************************************
+    void unescapeStr(string & s)
+    {
+        TSDebug(PLUGIN_NAME, "Enter: %s.", __FUNCTION__);
+
+        ostringstream oss;
+        string::size_type i{};
+
+        while(i < s.length())
+        {
+            if(s[i] == '%' && s[i + 1] != '\0' && s[i + 2] != '\0')
+            {
+                ++i;
+                string t;
+                t += s[i]; 
+                ++i;
+                t += s[i];
+                ++i;
+                oss << (char) strtol(t.c_str(), (char**) NULL, 16);
+                continue;
+            }
+            else if(s[i] == '+')
+            oss << ' ';
+            else
+                oss << s[i];
+            ++i;
+        }
+        s = oss.str();
+        TSDebug(PLUGIN_NAME, "Exit: %s.", __FUNCTION__);
+        return;
+    }
+
+    //***************************************************************************
+    // function: perform_deletions
+    //
+    // description: delete from cache using list of keys.
+    //***************************************************************************
+    void perform_deletions(void)
+    {
+        TSDebug(PLUGIN_NAME, "Enter: %s.", __FUNCTION__);
+
+        TSCont contp = TSContCreate(CacheHandler, TSMutexCreate());
+
+        for(auto elem : m_keys)
+        {
+            TSCacheKey key =  TSCacheKeyCreate();
+            TSMBuffer urlBuf = TSMBufferCreate();
+            TSMLoc urlLoc;
+            TSUrlCreate(urlBuf, &urlLoc);
+            TSDebug(PLUGIN_NAME, "deleting url: %s.", elem.c_str());
+            const char * start = &elem[0];
+            const char * end   = &start[elem.length()];
+            TSUrlParse(urlBuf, urlLoc, &start, end);
+            TSCacheKeyDigestFromUrlSet(key, urlLoc);
+            TSCacheRemove(contp, key);
+            TSCacheKeyDestroy(key);
+            TSHandleMLocRelease(urlBuf, NULL, urlLoc);
+        }
+        TSDebug(PLUGIN_NAME, "Exit: %s.", __FUNCTION__);
+        return;
+    }
+
+    private:
+    list<string> m_keys;
+};
+
 //*********** global objects ***********
 static remap_table_t global_remap_table;
+static list<string> global_cache_table;
+static cache_scan_state_t * cstate{};
 //**************************************
 
 //*******************************************************************************
 //*******************************************************************************
-static int handle_scan(TSCont contp, TSEvent event, void * edata)
+static int handleCacheScan(TSEvent event, void * edata)
 {
     TSDebug(PLUGIN_NAME, "Enter: %s.", __FUNCTION__);
 
-    cache_scan_state_t *cstate = (cache_scan_state_t *) TSContDataGet(contp);
-
-    if(event == TS_EVENT_CACHE_REMOVE)
-    {
-        cstate->write_vio = TSVConnWrite(cstate->net_vc, contp, cstate->resp_reader, INT64_MAX);
-        string s = "<td><font color=green>Cache remove operation succeeded.</font></td></tr>\n";
-        cstate->total_bytes += TSIOBufferWrite(cstate->resp_buffer, s.c_str(), s.length());
-        TSVIONBytesSet(cstate->write_vio, cstate->total_bytes);
-        TSVIOReenable(cstate->write_vio);
-        return TS_SUCCESS;
-    }
-
-    if(event == TS_EVENT_CACHE_REMOVE_FAILED)
-    {
-        cstate->write_vio = TSVConnWrite(cstate->net_vc, contp, cstate->resp_reader, INT64_MAX);
-        string s = "<td><font color=red>Cache remove operation failed.</font></td></tr>\n";
-        cstate->total_bytes += TSIOBufferWrite(cstate->resp_buffer, s.c_str(), s.length());
-        TSVIONBytesSet(cstate->write_vio, cstate->total_bytes);
-        TSVIOReenable(cstate->write_vio);
-        return TS_SUCCESS;
-    }
-
+    string s{};
     if(event == TS_EVENT_CACHE_SCAN)
     {
-        cstate->write_vio = TSVConnWrite(cstate->net_vc, contp, cstate->resp_reader, INT64_MAX);
-        string s = "<h3>Cache Contents:</h3>\n<p><pre>\n";
-        cstate->total_bytes += TSIOBufferWrite(cstate->resp_buffer,
-            s.c_str(), s.length());
+        global_cache_table.clear();
         return TS_EVENT_CONTINUE;
-    }
-
-    if(event == TS_EVENT_CACHE_SCAN_FAILED ||
-       event == TS_EVENT_CACHE_SCAN_OPERATION_BLOCKED ||
-       event == TS_EVENT_CACHE_SCAN_OPERATION_FAILED)
-    {
-        if(cstate->resp_buffer)
-        {
-            string s = "Cache scan operation blocked or failed.";
-            cstate->total_bytes += TSIOBufferWrite(cstate->resp_buffer,
-                s.c_str(), s.length());
-        }
-        if(cstate->write_vio)
-        {
-            TSVIONBytesSet(cstate->write_vio, cstate->total_bytes);
-            TSVIOReenable(cstate->write_vio);
-        }
-        return TS_CACHE_SCAN_RESULT_DONE;
     }
 
     if(event == TS_EVENT_CACHE_SCAN_OBJECT)
@@ -150,106 +241,88 @@ static int handle_scan(TSCont contp, TSEvent event, void * edata)
         TSCacheHttpInfoReqGet(cache_infop, &req_bufp, &req_hdr_loc);
         TSHttpHdrUrlGet(req_bufp, req_hdr_loc, &url_loc);
         int url_len;
-        char * s = TSUrlStringGet(req_bufp, url_loc, &url_len);
-        string orgin_url(s, url_len);
-        TSfree(s);
-
-        string cache_url;
-        cache_url = global_remap_table.construct_remap_url(string("cache-hndl"),
+        char * cstr = TSUrlStringGet(req_bufp, url_loc, &url_len);
+        string orgin_url(cstr, url_len);
+        TSfree(cstr);
+        string cache_url = global_remap_table.construct_remap_url(string("cache-hndl"),
 		orgin_url);
-        cache_url += "\n";
-        cstate->total_bytes += TSIOBufferWrite(cstate->resp_buffer,
-            cache_url.c_str(), cache_url.length());
+        global_cache_table.push_back(cache_url);
+
         TSHandleMLocRelease(req_bufp, req_hdr_loc, url_loc);
         TSHandleMLocRelease(req_bufp, TS_NULL_MLOC, req_hdr_loc);
-        TSVIOReenable(cstate->write_vio);
-        cstate->total_items++;
         return TS_CACHE_SCAN_RESULT_CONTINUE;
     }
 
     if(event == TS_EVENT_CACHE_SCAN_DONE)
     {
-        ostringstream oss;
-        oss << "</pre></p>\n<p>" << cstate->total_items << " total objects in cache</p>\n"
-            << "<form method=\"GET\" action=\"/cache-handler\">"
-            << "Enter URL to delete: <input type=\"text\" size=\"96\" name=\"remove_url\">"
-            << "<input type=\"submit\"  value=\"Delete URL\">";
+        s = "<H3>Cache Contents:</H3><PRE>"
+            "<TABLE>"
+            "<STYLE>"
+            "TABLE, TD { border: 1px solid black; }"
+            "TABLE { border-spacing: 2px; }"
+            "TD { background-color: #F2EFFB; paddding: 2px; }"
+            "</STYLE>"
+            "<FORM NAME=\"f\" ID=\"f\" METHOD=\"GET\"";
         cstate->total_bytes += TSIOBufferWrite(cstate->resp_buffer,
-            oss.str().c_str(), oss.str().length());
+            s.c_str(), s.length());
+
+        ostringstream oss;
+        for(auto elem : global_cache_table)
+        {
+            ostringstream oss;
+            oss << "<TR><TD><INPUT TYPE=CHECKBOX NAME=\"" << elem << "\"" << "\"></TD>";
+            oss << "<TD>" << elem << "</TD></TR>";
+            cstate->total_bytes += TSIOBufferWrite(cstate->resp_buffer,
+                oss.str().c_str(), oss.str().length());
+        }
+        s =  "</TABLE><BR>";
+        s += "<INPUT TYPE=SUBMIT VALUE=\"Delete\"> </PRE></FORM>";
+        cstate->total_bytes += TSIOBufferWrite(cstate->resp_buffer,
+            s.c_str(), s.length());
         TSVIONBytesSet(cstate->write_vio, cstate->total_bytes);
         TSVIOReenable(cstate->write_vio);
         return TS_CACHE_SCAN_RESULT_DONE;
     }
-    TSDebug(PLUGIN_NAME, "Unknown event in handle_scan: %d.", event);
+
+    if(event == TS_EVENT_CACHE_SCAN_FAILED ||
+       event == TS_EVENT_CACHE_SCAN_OPERATION_BLOCKED ||
+       event == TS_EVENT_CACHE_SCAN_OPERATION_FAILED)
+    {
+        if(cstate->resp_buffer)
+        {
+            s = "<H3>Cache scan operation blocked or failed.</H3>\n";
+            cstate->total_bytes += TSIOBufferWrite(cstate->resp_buffer,
+                s.c_str(), s.length());
+        }
+        if(cstate->write_vio)
+        {
+            TSVIONBytesSet(cstate->write_vio, cstate->total_bytes);
+            TSVIOReenable(cstate->write_vio);
+        }
+        return TS_CACHE_SCAN_RESULT_DONE;
+    }
+
+    if(event == TS_EVENT_CACHE_REMOVE_FAILED)
+    {
+        TSDebug(PLUGIN_NAME, "%s, %s.", __FUNCTION__,
+		"Event: TS_EVENT_CACHE_REMOVE_FAILED");
+    }
+
+    if(event == TS_EVENT_CACHE_REMOVE)
+    {
+        TSDebug(PLUGIN_NAME, "%s, %s.", __FUNCTION__,
+		"Event: TS_EVENT_CACHE_REMOVE");
+    }
+    TSDebug(PLUGIN_NAME, "Unknown event in %s: %d.", __FUNCTION__, event);
     return -1;
 }
 
 //*******************************************************************************
 //*******************************************************************************
-static int handle_accept(TSCont contp, TSEvent event, TSVConn vc)
-{
-    TSDebug(PLUGIN_NAME, "Enter: %s.", __FUNCTION__);
-
-    cache_scan_state_t *cstate = (cache_scan_state_t *) TSContDataGet(contp);
-
-    if(event == TS_EVENT_NET_ACCEPT)
-    {
-        if(cstate)
-        {
-            cstate->net_vc = vc;
-            cstate->req_buffer = TSIOBufferCreate();
-            cstate->resp_buffer = TSIOBufferCreate();
-            cstate->resp_reader = TSIOBufferReaderAlloc(cstate->resp_buffer);
-
-            cstate->read_vio = TSVConnRead(cstate->net_vc, contp,
-                cstate->req_buffer, INT64_MAX);
-        }
-    }
-    else
-    {
-        if(cstate)
-            delete cstate;
-    }
-    return TS_SUCCESS;
-}
-
-//*******************************************************************************
-//*******************************************************************************
-static void cache_delete(TSCont contp, void * edata)
-{
-    TSDebug(PLUGIN_NAME, "Enter: %s.", __FUNCTION__);
-
-    cache_scan_state_t * cstate = (cache_scan_state_t *) TSContDataGet(contp);
-
-    TSCacheKey key =  TSCacheKeyCreate();
-    TSDebug(PLUGIN_NAME, "deleting url: %s.", cstate->delete_key.c_str());
-
-    TSMBuffer urlBuf = TSMBufferCreate();
-    TSMLoc urlLoc;
-    TSUrlCreate(urlBuf, &urlLoc);
-
-    const char * start = &cstate->delete_key[0];
-    const char * end   = &start[cstate->delete_key.length()];
-    if(TSUrlParse(urlBuf, urlLoc, &start, end) != TS_PARSE_DONE ||
-        TSCacheKeyDigestFromUrlSet(key, urlLoc) != TS_SUCCESS)
-    {
-        TSDebug(PLUGIN_NAME, "CacheKeyDigestFromUrlSet failed.");
-    }
-    TSCacheRemove(contp, key);
-    TSCacheKeyDestroy(key);
-    TSHandleMLocRelease(urlBuf, NULL, urlLoc);
-    TSDebug(PLUGIN_NAME, "Exit: %s.", __FUNCTION__);
-    return;
-}
-
-//*******************************************************************************
-//*******************************************************************************
-static int handle_io(TSCont contp, TSEvent event, void * edata)
+static int handleIO(TSEvent event, void * edata)
 {
     TSDebug(PLUGIN_NAME, "Enter: %s.", __FUNCTION__);
     TSDebug(PLUGIN_NAME, "%s: Event: %d.", __FUNCTION__, event);
-
-    cache_scan_state_t * cstate = (cache_scan_state_t *) TSContDataGet(contp);
 
     string s;
     switch(event)
@@ -261,10 +334,7 @@ static int handle_io(TSCont contp, TSEvent event, void * edata)
         cstate->total_bytes += TSIOBufferWrite(cstate->resp_buffer,
             s.c_str(), s.length());
 
-        if(cstate->delete_key.length())
-            cache_delete(contp, edata);
-        else
-            TSCacheScan(contp, 0, 512000);
+        TSCacheScan(cstate->contp, 0, 512000);
         break;
 
         case TS_EVENT_VCONN_WRITE_READY:
@@ -276,7 +346,8 @@ static int handle_io(TSCont contp, TSEvent event, void * edata)
         case TS_EVENT_VCONN_WRITE_COMPLETE:
         case TS_EVENT_VCONN_EOS:
         TSDebug(PLUGIN_NAME, "%s: Event: %d.", __FUNCTION__, event);
-        delete cstate;
+	if(cstate)
+        	delete cstate;
         break;
 
         default:
@@ -289,25 +360,26 @@ static int handle_io(TSCont contp, TSEvent event, void * edata)
 
 //*******************************************************************************
 //*******************************************************************************
-static int cache_intercept(TSCont contp, TSEvent event, void * edata)
+static int CacheHandler(TSCont contp, TSEvent event, void * edata)
 {
     TSDebug(PLUGIN_NAME, "Enter: %s.", __FUNCTION__);
-    // TSDebug(PLUGIN_NAME, "%s: event: %d", __FUNCTION__, event);
-
-    cache_scan_state_t * cstate = (cache_scan_state_t *) TSContDataGet(contp);
 
     switch(event)
     {
         case TS_EVENT_NET_ACCEPT:
+        cstate->accept(edata);
+        return TS_SUCCESS;
+
         case TS_EVENT_NET_ACCEPT_FAILED:
-        return handle_accept(contp, event, (TSVConn) edata);
+        delete cstate;
+        return TS_SUCCESS;
 
         case TS_EVENT_VCONN_READ_READY:
         case TS_EVENT_VCONN_READ_COMPLETE:
         case TS_EVENT_VCONN_WRITE_READY:
         case TS_EVENT_VCONN_WRITE_COMPLETE:
         case TS_EVENT_VCONN_EOS:
-        return handle_io(contp, event, edata);
+        return handleIO(event, edata);
 
         case TS_EVENT_CACHE_SCAN:
         case TS_EVENT_CACHE_SCAN_FAILED:
@@ -317,7 +389,7 @@ static int cache_intercept(TSCont contp, TSEvent event, void * edata)
         case TS_EVENT_CACHE_SCAN_DONE:
         case TS_EVENT_CACHE_REMOVE:
         case TS_EVENT_CACHE_REMOVE_FAILED:
-        return handle_scan(contp, event, edata);
+        return handleCacheScan(event, edata);
 
         case TS_EVENT_ERROR:
         if(cstate)
@@ -336,47 +408,14 @@ static int cache_intercept(TSCont contp, TSEvent event, void * edata)
 
 //*******************************************************************************
 //*******************************************************************************
-static void unescapifyStr(string & s)
-{
-    TSDebug(PLUGIN_NAME, "Enter: %s.", __FUNCTION__);
-
-    ostringstream oss;
-    string::size_type i{};
-
-    while(i < s.length())
-    {
-        if(s[i] == '%' && s[i + 1] != '\0' && s[i + 2] != '\0')
-        {
-            ++i;
-            string t;
-            t += s[i]; 
-            ++i;
-            t += s[i];
-            ++i;
-            oss << (char) strtol(t.c_str(), (char**) NULL, 16);
-            continue;
-        }
-        else if(s[i] == '+')
-            oss << ' ';
-        else
-            oss << s[i];
-        ++i;
-    }
-    s = oss.str();
-    TSDebug(PLUGIN_NAME, "Exit: %s.", __FUNCTION__);
-    return;
-}
-
-//*******************************************************************************
-//*******************************************************************************
-static int setup_request(TSCont contp, TSHttpTxn txnp)
+static int SetupRequest(TSCont contp, TSHttpTxn txnp)
 {
     TSDebug(PLUGIN_NAME, "Enter: %s.", __FUNCTION__);
 
     TSMBuffer bufp;
     TSMLoc hdr_loc;
     TSMLoc url_loc;
-    int path_len, query_len;
+    int len;
 
     if(TSHttpTxnClientReqGet(txnp, &bufp, &hdr_loc) != TS_SUCCESS)
     {
@@ -393,7 +432,7 @@ static int setup_request(TSCont contp, TSHttpTxn txnp)
         return TS_SUCCESS;
     }
 
-    const char * s = TSUrlPathGet(bufp, url_loc, &path_len);
+    const char * s = TSUrlPathGet(bufp, url_loc, &len);
     if(!s)
     {
         TSDebug(PLUGIN_NAME, "Couldn't retrieve request path.");
@@ -402,29 +441,20 @@ static int setup_request(TSCont contp, TSHttpTxn txnp)
         TSHttpTxnReenable(txnp, TS_EVENT_HTTP_CONTINUE);
         return TS_SUCCESS;
     }
-    string path(s, path_len);
+    string path(s, len);
 
     if(path == "cache-handler")
     {
-        cache_scan_state_t * cstate = new cache_scan_state_t(txnp);
-        cstate->contp = TSContCreate(cache_intercept, TSMutexCreate());
+        cstate = new cache_scan_state_t();
         TSHttpTxnIntercept(cstate->contp, txnp);
+    }
 
-        s = TSUrlHttpQueryGet(bufp, url_loc, &query_len);
-        string query(s, query_len);
-        if(query.length())
-        {
-            unescapifyStr(query);
-            boost::smatch matches;
-            if(boost::regex_match(query, matches, boost::regex("remove_url=(.*)$")))
-            {
-                TSDebug(PLUGIN_NAME, "Setting delete key: %s.",
-                    matches[1].str().c_str());
-                cstate->delete_key = matches[1].str();
-            }
-        }
-        TSContDataSet(cstate->contp, cstate);
-        TSDebug(PLUGIN_NAME, "setup cache intercept.");
+    s = TSUrlHttpQueryGet(bufp, url_loc, &len);
+    string query(s, len);
+    if(query.length())
+    {
+        delete_keys_t d(query);
+        d.perform_deletions();
     }
     TSHandleMLocRelease(bufp, hdr_loc, url_loc);
     TSHandleMLocRelease(bufp, TS_NULL_MLOC, hdr_loc);
@@ -436,7 +466,7 @@ static int setup_request(TSCont contp, TSHttpTxn txnp)
 
 //************************************************************************************
 //************************************************************************************
-static int cache_hndl_plugin(TSCont contp, TSEvent event, void * edata)
+static int CacheHndlPlugin(TSCont contp, TSEvent event, void * edata)
 {
     TSDebug(PLUGIN_NAME, "Enter: %s.", __FUNCTION__);
     TSDebug(PLUGIN_NAME, "%s: event == %d.", __FUNCTION__, event);
@@ -444,7 +474,7 @@ static int cache_hndl_plugin(TSCont contp, TSEvent event, void * edata)
     switch(event)
     {
         case TS_EVENT_HTTP_READ_REQUEST_HDR:
-        return setup_request(contp, (TSHttpTxn) edata);
+        return SetupRequest(contp, (TSHttpTxn) edata);
 
         default:
         TSDebug(PLUGIN_NAME, "%s: Unexpected event: %d", __FUNCTION__, event);
@@ -461,11 +491,11 @@ void TSPluginInit(int argc, const char *argv[])
 {
     TSDebug(PLUGIN_NAME, "Enter: %s.", __FUNCTION__);
 
-#ifdef ATS_6_0_0
+#ifdef __ATS_6_0_0__
         TSPluginRegistrationInfo info;
         info.plugin_name = (char*) "cache-hndl-v1";
         info.vendor_name = (char*) "Concurrent Computer Corporation";
-        info.support_email = (char *) " ";
+        info.support_email = (char *) "";
 
         if(!TSPluginRegister(&info))
             TSError ("[plugin_name] Plugin registration failed.");
@@ -479,7 +509,7 @@ void TSPluginInit(int argc, const char *argv[])
         path += "cacheurl.config";
     global_remap_table.load_config_file(path);
 
-    TSCont contp = TSContCreate(cache_hndl_plugin, TSMutexCreate());
+    TSCont contp = TSContCreate(CacheHndlPlugin, TSMutexCreate());
     TSHttpHookAdd(TS_HTTP_READ_REQUEST_HDR_HOOK, contp);
 
     TSDebug(PLUGIN_NAME, "Exit: %s.", __FUNCTION__);
