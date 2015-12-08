@@ -21,7 +21,6 @@
 #include <strings.h>
 
 #include <czmq.h>
-#include <jansson.h>
 
 #include <algorithm>
 #include <iomanip>

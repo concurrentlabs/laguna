@@ -21,7 +21,7 @@
 #include "tcldcfg.h"
 #include "tcshared.h"
 #include "tchealth.h"
-#include "edge_status.h"
+#include "cdn_status.h"
 #include "tcutils.h"
 
 #endif /* HEALTH_H */

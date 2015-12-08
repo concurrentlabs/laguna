@@ -14,9 +14,9 @@
   limitations under the License.
 */
 
-#ifndef EDGE_STATUS_H
-#define EDGE_STATUS_H 1
+#ifndef CDN_STATUS_H
+#define CDN_STATUS_H 1
 
-void edge_status(tc_health_thread_ctxt_t * pCntx);
+void cdn_status(tc_health_thread_ctxt_t * pCntx);
 
 #endif

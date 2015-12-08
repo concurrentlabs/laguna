@@ -364,7 +364,7 @@ _tcHealthGetModeOfOperationEntry(tc_health_thread_ctxt_t* pCntx,
                     pCntx->pQHealthToBkgrnd,
                     evLogLvlFatal,
                     &(pCntx->tLogDescSys),
-                   "edge_status, map interface ping"
+                   "cdn_status, map interface ping"
                    " array out of bounds",
                    _pMap->pMonActv->strRedirAddr);
         }
@@ -612,7 +612,7 @@ _tcHealthUpdateMOOSts(
     BOOL                            _bIsActv = FALSE;
     U16                             _nTblSz = 0;
 
-    edge_status(pCntx);
+    cdn_status(pCntx);
     _nTblSz = _tcHealthGetModeOfOperationTblSz(pCntx);
     pCntx->tMtxHealthToPktGenActvMsg.nTotal =  _nTblSz;
     pCntx->tMtxHealthToMibMsg.nTotal        =  _nTblSz;

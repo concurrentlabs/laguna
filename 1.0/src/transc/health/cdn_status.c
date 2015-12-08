@@ -48,11 +48,11 @@ typedef struct
 #define CM_GET_CMSTATS_REQ   (RPCCMD_REQUEST + 6)
 #define CM_GET_CMSTATS_RESP  (RPCCMD_RESPONSE + 6)
 
-static int16_t _edge_status(tc_health_thread_ctxt_t * _pCntx,char *ip);
+static int16_t _cdn_status(tc_health_thread_ctxt_t * _pCntx,char *ip);
 
-static int16_t edge_active(const char * ip);
+static int16_t ccur_edge_active(const char * ip);
 
-static int16_t rr_active_sites(tc_health_thread_ctxt_t * _pCntx,const char * ip);
+static int16_t ccur_rr_active_sites(tc_health_thread_ctxt_t * _pCntx,const char * ip);
 
 static int16_t process_edge(json_t * edge);
 
@@ -64,7 +64,7 @@ static size_t read_async(int32_t fd, uint8_t buf[], size_t length);
 
 
 //**********************************************************************************
-// function: _edge_status
+// function: _cdn_status
 //
 // description: First query redirect ip address to see if it is request router.
 //              If active_sites are returned, edge is active.
@@ -74,7 +74,7 @@ static size_t read_async(int32_t fd, uint8_t buf[], size_t length);
 //
 // return: 1 for edge active, 0 for edge inactive.
 //**********************************************************************************
-int16_t _edge_status(tc_health_thread_ctxt_t * _pCntx,char *ip)
+int16_t _cdn_status(tc_health_thread_ctxt_t * _pCntx,char *ip)
 {
     if(_pCntx->bNoRRPolling)
     {
@@ -83,14 +83,14 @@ int16_t _edge_status(tc_health_thread_ctxt_t * _pCntx,char *ip)
     if((strcmp(ip, "127.0.0.1") == 0) ||
        ('\0' == ip[0]))
         return 0;
-    if(rr_active_sites(_pCntx,ip))
+    if(ccur_rr_active_sites(_pCntx, ip))
         return 1;
-    if(edge_active(ip))
+    if(ccur_edge_active(ip))
         return 1;
     return 0;
 }
 
-void edge_status(tc_health_thread_ctxt_t * pCntx)
+void cdn_status(tc_health_thread_ctxt_t * pCntx)
 {
     /* update map interface link status */
     U16                             _i;
@@ -100,7 +100,7 @@ void edge_status(tc_health_thread_ctxt_t * pCntx)
     {
         _pPing = &(pCntx->tMonActvTbl[_i]);
         _pPing->bIsRedirUp =
-                _edge_status(pCntx,_pPing->strRedirAddr);
+                _cdn_status(pCntx,_pPing->strRedirAddr);
         /* Print to log only if state change from up to down,
          * vice versa. */
         if(_pPing->bOldRedirIsUp)
@@ -148,12 +148,12 @@ void edge_status(tc_health_thread_ctxt_t * pCntx)
 }
 
 //**********************************************************************************
-// function: rr_active_sites
+// function: ccur_rr_active_sites
 //
-// description: Determines if request_router has acvive edge sites.
+// description: Determines if Concurrent request_router has acvive edge sites.
 //              Returns 0 for no sites, # of active edge sites.
 //**********************************************************************************
-static int16_t rr_active_sites(tc_health_thread_ctxt_t * pCntx,
+static int16_t ccur_rr_active_sites(tc_health_thread_ctxt_t * pCntx,
                                const char * ip)
 {
     CURL * curl;
@@ -173,7 +173,7 @@ static int16_t rr_active_sites(tc_health_thread_ctxt_t * pCntx,
         return 0;
     curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, UrlCallback);
-    curl_easy_setopt(curl, CURLOPT_NOSIGNAL,1L);
+    curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)& url_data);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
  
@@ -255,12 +255,12 @@ static size_t UrlCallback(void * contents, size_t size, size_t nmemb, void * use
     return realsize;
 }
 
-//**********************************************************************************
-// function: edge_active
+//*************************************************************************************
+// function: ccur_edge_active
 //
-// description: If redirectaddress is edge server, determines if edge is up.
-//**********************************************************************************
-static int16_t edge_active(const char * ip)
+// description: If redirectaddress is Concurrent edge server, determines if edge is up.
+//*************************************************************************************
+static int16_t ccur_edge_active(const char * ip)
 {
     rpcMessageHdr_t hdr;
     size_t msg_len;

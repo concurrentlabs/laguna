@@ -140,7 +140,7 @@ endif
 %.d : health/%.c
 	$(CMDVERBOSE)$(CC) -M $(CFLAGS) $(INCPATHS) $< > $(OBJDIR)/$(@F)
 
-TARGETSRC	   += edge_status.c tchealth.c
+TARGETSRC	   += cdn_status.c tchealth.c
 
 #-------------------------------------------------------------------------
 # Library Dependencies
