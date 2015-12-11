@@ -30,7 +30,7 @@ typedef struct
     size_t size;
 } UrlData_t;
 
-// RPC Message Header Format, originally defined in cache_manager_rpc.h
+// RPC Message Header Format, returned by Concurrent Edge.
 typedef struct
 {
     unsigned short  code;
@@ -48,7 +48,9 @@ typedef struct
 #define CM_GET_CMSTATS_REQ   (RPCCMD_REQUEST + 6)
 #define CM_GET_CMSTATS_RESP  (RPCCMD_RESPONSE + 6)
 
-static int16_t _cdn_status(tc_health_thread_ctxt_t * _pCntx,char *ip);
+enum healthCheck { NONE = 0, CCUR, CDN };
+
+static int16_t cdn_query(tc_health_thread_ctxt_t * _pCntx,char *ip);
 
 static int16_t ccur_edge_active(const char * ip);
 
@@ -56,95 +58,119 @@ static int16_t ccur_rr_active_sites(tc_health_thread_ctxt_t * _pCntx,const char 
 
 static int16_t process_edge(json_t * edge);
 
-static size_t UrlCallback(void * contents, size_t size, size_t nmemb, void * userp);
+static size_t UrlAPIServerCallback(void * contents, size_t size, size_t nmemb, void * userp);
 
 static int32_t tcp_connect(const char * host, uint16_t port);
 
 static size_t read_async(int32_t fd, uint8_t buf[], size_t length);
 
+static int16_t ats_rr_query(tc_health_thread_ctxt_t * pCntx, const char * ip);
 
 //**********************************************************************************
-// function: _cdn_status
+// function: cdn_status
 //
-// description: First query redirect ip address to see if it is request router.
-//              If active_sites are returned, edge is active.
-//
-//              If redirect ip address isn't request router, query as edge.
-//              If response is returned, edge is active.
-//
-// return: 1 for edge active, 0 for edge inactive.
+// description: Determine status of cdn.
 //**********************************************************************************
-int16_t _cdn_status(tc_health_thread_ctxt_t * _pCntx,char *ip)
-{
-    if(_pCntx->bNoRRPolling)
-    {
-        return 1;
-    }
-    if((strcmp(ip, "127.0.0.1") == 0) ||
-       ('\0' == ip[0]))
-        return 0;
-    if(ccur_rr_active_sites(_pCntx, ip))
-        return 1;
-    if(ccur_edge_active(ip))
-        return 1;
-    return 0;
-}
-
 void cdn_status(tc_health_thread_ctxt_t * pCntx)
 {
     /* update map interface link status */
     U16                             _i;
     tc_health_monactv_t*         _pPing;
 
-    for(_i=0;_i<pCntx->nMonActvTbl;_i++)
+    for(_i = 0; _i<pCntx->nMonActvTbl; _i++)
     {
         _pPing = &(pCntx->tMonActvTbl[_i]);
-        _pPing->bIsRedirUp =
-                _cdn_status(pCntx,_pPing->strRedirAddr);
+        _pPing->bIsRedirUp = cdn_query(pCntx,_pPing->strRedirAddr);
         /* Print to log only if state change from up to down,
          * vice versa. */
         if(_pPing->bOldRedirIsUp)
         {
-            if( FALSE ==
-                    _pPing->bIsRedirUp)
+            if(_pPing->bIsRedirUp == FALSE)
             {
                 if('\0' != _pPing->strRedirAddr[0])
-                    evLogTrace(
-                            pCntx->pQHealthToBkgrnd,
-                            evLogLvlWarn,
-                            &(pCntx->tLogDescSys),
-                           "cache node(s): %s/down",
+				{
+                    evLogTrace(pCntx->pQHealthToBkgrnd, evLogLvlWarn,
+                            &(pCntx->tLogDescSys), "cache node(s): %s/down",
                            _pPing->strRedirAddr);
+				}
                 else
-                    evLogTrace(
-                            pCntx->pQHealthToBkgrnd,
-                            evLogLvlWarn,
-                            &(pCntx->tLogDescSys),
-                           "cache node(s): null/down");
+				{
+                    evLogTrace(pCntx->pQHealthToBkgrnd, evLogLvlWarn,
+                            &(pCntx->tLogDescSys), "cache node(s): null/down");
+				}
             }
         }
         else
         {
-            if( TRUE ==
-                    _pPing->bIsRedirUp)
+            if(_pPing->bIsRedirUp == TRUE)
             {
-                if('\0' != _pPing->strRedirAddr[0])
-                    evLogTrace(
-                            pCntx->pQHealthToBkgrnd,
-                            evLogLvlWarn,
-                            &(pCntx->tLogDescSys),
-                           "cache node(s): %s/up",
+                if(_pPing->strRedirAddr[0] != (char)0)
+				{
+                    evLogTrace(pCntx->pQHealthToBkgrnd, evLogLvlWarn,
+                            &(pCntx->tLogDescSys), "cache node(s): %s/up",
                            _pPing->strRedirAddr);
+				}
                 else
-                    evLogTrace(
-                            pCntx->pQHealthToBkgrnd,
-                            evLogLvlWarn,
-                            &(pCntx->tLogDescSys),
-                           "cache node(s): null/down");
+				{
+                    evLogTrace(pCntx->pQHealthToBkgrnd, evLogLvlWarn,
+                            &(pCntx->tLogDescSys), "cache node(s): null/down");
+				}
             }
         }
         _pPing->bOldRedirIsUp = _pPing->bIsRedirUp;
     }
+}
+
+//**********************************************************************************
+// function: cdn_query
+//
+// description: Query CDN to determine status.
+//
+// return: 1 for active CDN, 0 for inactive CDN.
+//**********************************************************************************
+static int16_t cdn_query(tc_health_thread_ctxt_t * _pCntx, char *ip)
+{
+    if((strcmp(ip, "127.0.0.1") == 0) || (ip[0]) == (char)0)
+        return 0 ;
+
+    switch(_pCntx->healthCheck)
+    {
+        case NONE:
+        evLogTrace(_pCntx->pQHealthToBkgrnd, evLogLvlWarn,
+            &(_pCntx->tLogDescSys), "HealthCheck NONE.");
+        return 1;
+
+        case CCUR:
+        evLogTrace(_pCntx->pQHealthToBkgrnd, evLogLvlWarn,
+            &(_pCntx->tLogDescSys), "HealthCheck CCUR.");
+        printf("healthCheck CCUR.\n");
+    	if(ccur_rr_active_sites(_pCntx, ip))
+        	return 1;
+    	if(ccur_edge_active(ip))
+        	return 1;
+        return 0;
+
+        case CDN:
+        evLogTrace(_pCntx->pQHealthToBkgrnd, evLogLvlWarn,
+            &(_pCntx->tLogDescSys), "HealthCheck CDN.");
+        printf("healthCheck CDN.\n");
+		if(ats_rr_query(_pCntx, ip))
+		{
+        	evLogTrace(_pCntx->pQHealthToBkgrnd, evLogLvlWarn,
+            	&(_pCntx->tLogDescSys), "CDN is active.");
+			printf("CDN is active.\n");
+			return 1;
+		}
+        evLogTrace(_pCntx->pQHealthToBkgrnd, evLogLvlWarn,
+        	&(_pCntx->tLogDescSys), "CDN is inactive.");
+		printf("CDN is inactive.\n");
+		return 0;
+
+        default:
+        return 1;
+    }
+    // never gets here!!!
+    return 1;
 }
 
 //**********************************************************************************
@@ -153,8 +179,7 @@ void cdn_status(tc_health_thread_ctxt_t * pCntx)
 // description: Determines if Concurrent request_router has acvive edge sites.
 //              Returns 0 for no sites, # of active edge sites.
 //**********************************************************************************
-static int16_t ccur_rr_active_sites(tc_health_thread_ctxt_t * pCntx,
-                               const char * ip)
+static int16_t ccur_rr_active_sites(tc_health_thread_ctxt_t * pCntx, const char * ip)
 {
     CURL * curl;
     CURLcode res;
@@ -172,7 +197,7 @@ static int16_t ccur_rr_active_sites(tc_health_thread_ctxt_t * pCntx,
     if(NULL == curl)
         return 0;
     curl_easy_setopt(curl, CURLOPT_URL, url);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, UrlCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, UrlAPIServerCallback);
     curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)& url_data);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
@@ -238,11 +263,12 @@ static int16_t process_edge(json_t * edge)
 }
 
 //**********************************************************************************
-// function: UrlCallback
+// function: UrlAPIServerCallback
 //
 // description: curl callback to recieve json data.
 //**********************************************************************************
-static size_t UrlCallback(void * contents, size_t size, size_t nmemb, void * userp)
+static size_t UrlAPIServerCallback(void * contents, size_t size, size_t nmemb,
+	void * userp)
 {
     size_t realsize = size * nmemb;
     UrlData_t *mem = (UrlData_t *) userp;
@@ -258,7 +284,7 @@ static size_t UrlCallback(void * contents, size_t size, size_t nmemb, void * use
 //*************************************************************************************
 // function: ccur_edge_active
 //
-// description: If redirectaddress is Concurrent edge server, determines if edge is up.
+// description: If redirectaddress is Concurrent Edge Server, determines if edge is up.
 //*************************************************************************************
 static int16_t ccur_edge_active(const char * ip)
 {
@@ -352,4 +378,51 @@ static size_t read_async(int32_t fd, uint8_t buf[], size_t length)
         return 0;
     size_t nread = read(fd, buf, length);
     return nread;
+}
+
+//**********************************************************************************
+// function: ats_rr_query
+//
+// description: Determines if Apache Request_Router is acvive and attached to
+//              active Apache Traffic Servers.
+//
+//              Returns 0 if inactive, # of active traffic servers sites.
+//**********************************************************************************
+static int16_t ats_rr_query(tc_health_thread_ctxt_t * pCntx, const char * ip)
+{
+    CURL * curl;
+    CURLcode res;
+    UrlData_t url_data;
+    json_error_t error;
+    // int16_t ret = 0;
+    const char * url_fmt = "http://%s:3333/crs/locations/caches";
+    char url[64];
+
+    bzero(&url_data, sizeof(url_data));
+    snprintf(url, sizeof(url),url_fmt, ip);
+    url[sizeof(url)-1] = '\0';
+ 
+    curl = curl_easy_init();
+    if(curl == NULL)
+        return 0;
+    curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, UrlAPIServerCallback);
+    curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)& url_data);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+ 
+    res = curl_easy_perform(curl);
+    if(res != CURLE_OK)
+    {
+        curl_easy_cleanup(curl);
+        return 0;
+    }
+    curl_easy_cleanup(curl);
+
+    json_t * root = json_loads(url_data.buffer, 0, &error);
+    if(!root)
+        return 0;
+	// printf("%s\n", url_data.buffer);
+	// ...parse json...
+	return 1;
 }

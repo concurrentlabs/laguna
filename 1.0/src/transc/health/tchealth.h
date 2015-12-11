@@ -38,7 +38,7 @@ struct _tc_health_thread_ctxt_s
     tc_gd_time_t                    tDowntime;
     /****** config and init Flags ****************/
     tc_ldcfg_t                      tConfig;
-    BOOL                            bNoRRPolling;
+    int32_t                         healthCheck;
     BOOL                            bMonIntfUpdate;
     BOOL                            bOutIntfUpdate;
     /****** Health internal dstruct  ****************/

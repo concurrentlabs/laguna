@@ -211,7 +211,7 @@ struct _tc_ldcfg_s
 {
     /* Hardcoded config values */
     BOOL                    bLockQ;
-    BOOL                    bNoRRPolling;
+    int32_t                 healthCheck;
     BOOL                    bBlockTraffic;
     BOOL                    bDaemonize;
     FILE*                   pPidFile;

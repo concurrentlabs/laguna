@@ -22,10 +22,8 @@
  *
  * description: Find monitoring interface within mon interface table.
  ***************************************************************************/
-CCUR_PRIVATE(tc_mtxtbl_ingress_t*)
-_tcHealthFindMonIntf(
-        tc_mtxtbl_ipptohlth_t* pPPToHealthMonIntfMsg,
-        CHAR*                  str)
+CCUR_PRIVATE(tc_mtxtbl_ingress_t*) _tcHealthFindMonIntf(
+	tc_mtxtbl_ipptohlth_t* pPPToHealthMonIntfMsg, CHAR* str)
 {
     U32                     _i;
     tc_mtxtbl_ingress_t*    _pMonIntf = NULL;
@@ -360,13 +358,9 @@ _tcHealthGetModeOfOperationEntry(tc_health_thread_ctxt_t* pCntx,
         }
         else
         {
-            evLogTrace(
-                    pCntx->pQHealthToBkgrnd,
-                    evLogLvlFatal,
-                    &(pCntx->tLogDescSys),
-                   "cdn_status, map interface ping"
-                   " array out of bounds",
-                   _pMap->pMonActv->strRedirAddr);
+            evLogTrace(pCntx->pQHealthToBkgrnd, evLogLvlFatal,
+                    &(pCntx->tLogDescSys), "cdn_status, map interface ping"
+                   " array out of bounds", _pMap->pMonActv->strRedirAddr);
         }
     }
 }
@@ -377,9 +371,7 @@ _tcHealthGetModeOfOperationEntry(tc_health_thread_ctxt_t* pCntx,
  * description: Init interface active table. This table contains redirection
  * addresses for pinging the edge or RR.
  ***************************************************************************/
-CCUR_PRIVATE(void)
-_tcHealthInitIntfActvTbl(
-        tc_health_thread_ctxt_t*    pCntx)
+CCUR_PRIVATE(void) _tcHealthInitIntfActvTbl(tc_health_thread_ctxt_t* pCntx)
 {
     U16                          _i;
     U16                          _j;
@@ -450,9 +442,7 @@ _tcHealthInitIntfActvTbl(
  * description: Read/Write message from/to packet processing.
  ***************************************************************************/
 CCUR_PRIVATE(void)
-_tcHealthRWPktPrcMsg(
-        tc_health_thread_ctxt_t*    pCntx,
-        BOOL                        bRead)
+_tcHealthRWPktPrcMsg(tc_health_thread_ctxt_t* pCntx, BOOL bRead)
 {
     tc_shared_pktprcmsg_t*    _pPktPrcToHlthMsg;
 
@@ -477,10 +467,8 @@ _tcHealthRWPktPrcMsg(
  *
  * description: Read/Write message from/to packet generation.
  ***************************************************************************/
-CCUR_PRIVATE(void)
-_tcHealthRWPktGenMsg(
-        tc_health_thread_ctxt_t*    pCntx,
-        BOOL                        bRead)
+CCUR_PRIVATE(void) _tcHealthRWPktGenMsg(tc_health_thread_ctxt_t* pCntx,
+        BOOL bRead)
 {
     tc_shared_healthmsg_t*    _pHlthToPktGenMsg;
     tc_shared_pktgenmsg_t*    _pPktGenToHlthMsg;
@@ -524,9 +512,7 @@ _tcHealthRWPktGenMsg(
  *
  * description: Write message bound for MIB thread.
  ***************************************************************************/
-CCUR_PRIVATE(void)
-_tcHealthWMibMsg(
-        tc_health_thread_ctxt_t*    pCntx)
+CCUR_PRIVATE(void) _tcHealthWMibMsg(tc_health_thread_ctxt_t* pCntx)
 {
     tc_shared_healthmsg_t*    _pHlthToMibMsg;
 
@@ -545,9 +531,7 @@ _tcHealthWMibMsg(
  * The status will reflect the entire system health status whether it is
  * down or up.
  ***************************************************************************/
-CCUR_PRIVATE(void)
-_tcHealthUpdateStsInfo(
-        tc_health_thread_ctxt_t*    pCntx)
+CCUR_PRIVATE(void) _tcHealthUpdateStsInfo(tc_health_thread_ctxt_t* pCntx)
 {
     tc_tr_comptype_e   _i;
     tc_tr_sts_e    _eTrStatusTbl[tcTRCompTypeMax];
@@ -603,9 +587,7 @@ _tcHealthUpdateStsInfo(
  * description: Update TC Mode Of Opearation (MOO) status. The status is
  * either active or monitor.
  ***************************************************************************/
-CCUR_PRIVATE(void)
-_tcHealthUpdateMOOSts(
-        tc_health_thread_ctxt_t*    pCntx)
+CCUR_PRIVATE(void) _tcHealthUpdateMOOSts(tc_health_thread_ctxt_t* pCntx)
 {
     U16                             _i;
     CHAR                            _strMsg[TRANSC_HEALTH_MOOMSG_LEN];
@@ -637,10 +619,8 @@ _tcHealthUpdateMOOSts(
  * description: Collect and process messages from other threads.
  ***************************************************************************/
 CCUR_PRIVATE(void)
-_tcHealthCollectAndProcessMsgs(
-        tc_health_thread_ctxt_t* pCntx,
-        BOOL                     bNoLoop,
-        U16                      nPingIntvl)
+_tcHealthCollectAndProcessMsgs(tc_health_thread_ctxt_t* pCntx,
+        BOOL bNoLoop, U16 nPingIntvl)
 {
     U16 _nPing;
 

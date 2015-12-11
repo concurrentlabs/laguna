@@ -38,7 +38,7 @@ _transCUsageMsgPrint()
     tcPrintSysLog(LOG_INFO,"-lq     ,               locked queue if specified\n");
     tcPrintSysLog(LOG_INFO,"-ppr    ,               process http proxy request\n");
     tcPrintSysLog(LOG_INFO,"-icr    ,               ignore CORS (Cross Origin Resource Sharing) request\n");
-    tcPrintSysLog(LOG_INFO,"-nrrp   ,               No Request Router (RR) polling\n");
+    tcPrintSysLog(LOG_INFO,"-hc     [number],       healthcheck  mode: (0 = none, 1 = ccur, 2 = cdn)\n");
     tcPrintSysLog(LOG_INFO,"-bt     ,               block traffic\n");
     tcPrintSysLog(LOG_INFO,"-dmac   [address],      outgoing interface destination MAC address\n");
     tcPrintSysLog(LOG_INFO,"-smac   [address],      outgoing interface source MAC address\n");
@@ -71,8 +71,7 @@ main( int argc, char *argv[] )
                 &(_pGlbThdCntx->tMibThd.tConfig),argc,argv);
         if(ESUCCESS != _result)
             break;
-        _result =
-                tcInitEventLog(_pGlbThdCntx);
+        _result = tcInitEventLog(_pGlbThdCntx);
         if(ESUCCESS != _result)
             break;
         _result = tcInitDaemonize(

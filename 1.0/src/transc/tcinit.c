@@ -350,7 +350,7 @@ _tcInitHealthThreadRes(
         tc_bkgrnd_evlogtbl_t*                pZLogCatCompTbl,
         tc_ldcfg_conf_t*                     pLdConfigYamlCfg,
         tc_ldsyscfg_conf_t*                  pLdSysYamlCfg,
-        BOOL                                 bNoRRPolling)
+        int32_t                              healthCheck)
 {
     tresult_t   _result;
     CHAR        _strBuff[512];
@@ -363,7 +363,7 @@ _tcInitHealthThreadRes(
                pZLogCatCompTbl->nZLogCat >= TRANSC_BKGRNDLOG_QUEUE_MAX);
     do
     {
-        pCntx->bNoRRPolling = bNoRRPolling;
+        pCntx->healthCheck = healthCheck;
         /* Init mib component sys logging */
         _result = evLogOpenLogicalLog(
                pZLogCatCompTbl->tZLogCat,
@@ -1276,9 +1276,9 @@ tcInitReadFromConsole(
             {
                 pCfg->bLockQ = TRUE;
             }
-            else if( !strcmp( argv[_i], "-nrrp" ) )
+            else if( !strcmp( argv[_i], "-hc" ) )
             {
-                pCfg->bNoRRPolling = TRUE;
+				pCfg->healthCheck = atoi(argv[++_i]);
             }
             else if( !strcmp( argv[_i], "-d" ) )
             {
@@ -1855,7 +1855,7 @@ tcInitRes(
                 &(pCntx->tBkGnThd.tZLogCatComp),
                 &(pCntx->tMibThd.tConfig.tConfigYamlLdCfg),
                 &(pCntx->tMibThd.tConfig.tSysYamlLdCfg),
-                pCntx->tMibThd.tConfig.bNoRRPolling);
+                pCntx->tMibThd.tConfig.healthCheck);
         if(ESUCCESS != _result)
             break;
 
