@@ -273,7 +273,7 @@ static int handle_cache_scan(TSEvent event, void * edata)
                 oss.str().c_str(), oss.str().length());
         }
         s =  "</TABLE><BR>";
-        s += "<INPUT TYPE=SUBMIT VALUE=\"Submit\"> </PRE></FORM>";
+        s += "<INPUT TYPE=SUBMIT VALUE=\"Delete\"> </PRE></FORM>";
         cstate->total_bytes += TSIOBufferWrite(cstate->resp_buffer,
             s.c_str(), s.length());
         TSVIONBytesSet(cstate->write_vio, cstate->total_bytes);
