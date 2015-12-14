@@ -424,7 +424,7 @@ static int16_t ats_rr_query(tc_health_thread_ctxt_t * pCntx, const char * ip)
     json_t * root = json_loads(url_data.buffer, 0, &error);
     if(!root)
         return 0;
-	// printf("%s\n", url_data.buffer);
-	// ...parse json...
-	return 1;
+    // printf("%s\n", url_data.buffer);
+    // ...parse json...
+    return 1;
 }
