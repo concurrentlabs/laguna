@@ -32,14 +32,15 @@
 static tc_gd_thread_ctxt_t       g_ThdCntx;
 extern void * tcplane_snmp(void * context);
 
+extern void transcUsageMsgPrint(void);
+
 /**************** PRIVATE Functions **********************/
 /***************************************************************************
  * function: _tcInitSharedQ
  *
  * description: Init shared queue between threads.
  ***************************************************************************/
-CCUR_PRIVATE(tresult_t)
-_tcInitSharedQ(tc_gd_thread_ctxt_t*     pCntx)
+tresult_t _tcInitSharedQ(tc_gd_thread_ctxt_t* pCntx)
 {
     tresult_t                   _result;
     U16                         _ibkgrnd;
@@ -344,8 +345,7 @@ _tcInitSharedQ(tc_gd_thread_ctxt_t*     pCntx)
  *
  * description: Init Health thread resources.
  ***************************************************************************/
-CCUR_PRIVATE(tresult_t)
-_tcInitHealthThreadRes(
+tresult_t _tcInitHealthThreadRes(
         tc_health_thread_ctxt_t*             pCntx,
         tc_bkgrnd_evlogtbl_t*                pZLogCatCompTbl,
         tc_ldcfg_conf_t*                     pLdConfigYamlCfg,
@@ -400,8 +400,7 @@ _tcInitHealthThreadRes(
  *
  * description: Init Mib thread resources.
  ***************************************************************************/
-CCUR_PRIVATE(tresult_t)
-_tcInitMibThreadInitRes(
+tresult_t _tcInitMibThreadInitRes(
         tc_tcplanesnmp_thread_ctxt_t*        pCntx,
         tc_bkgrnd_evlogtbl_t*                pZLogCatCompTbl,
         tc_ldcfg_conf_t*                     pLdConfigYamlCfg,
@@ -454,8 +453,7 @@ _tcInitMibThreadInitRes(
  *
  * description: Init background thread resources.
  ***************************************************************************/
-CCUR_PRIVATE(tresult_t)
-_tcInitBkGrndThreadInitRes(
+tresult_t _tcInitBkGrndThreadInitRes(
         tc_bkgrnd_thread_ctxt_t*     pCntx,
         tc_bkgrnd_evlogtbl_t*        pZLogCatCompTbl,
         tc_ldcfg_conf_t*             pLdConfigYamlCfg,
@@ -479,8 +477,7 @@ _tcInitBkGrndThreadInitRes(
  * description: Init thread resources. This function is being called only
  * once at startup.
  ***************************************************************************/
-CCUR_PRIVATE(tresult_t)
-_tcInitPktPrcThreadInitRes(
+tresult_t _tcInitPktPrcThreadInitRes(
         tc_pktprc_thread_ctxt_t*     pCntx,
         tc_bkgrnd_evlogtbl_t*        pZLogCatCompTbl,
         tc_ldcfg_conf_t*             pLdConfigYamlCfg,
@@ -532,8 +529,7 @@ _tcInitPktPrcThreadInitRes(
  * description: Init thread resources. This function is being called only
  * once at startup.
  ***************************************************************************/
-CCUR_PRIVATE(tresult_t)
-_tcInitHttpThreadInitRes(
+tresult_t _tcInitHttpThreadInitRes(
         tc_httpprc_thread_ctxt_t*     pCntx,
         tc_bkgrnd_evlogtbl_t*         pZLogCatCompTbl,
         tc_bkgrnd_evlogtbl_t*         pZLogCatSvcTbl,
@@ -600,8 +596,7 @@ _tcInitHttpThreadInitRes(
  * description: Init thread resources. This function is being called only
  * once at startup.
  ***************************************************************************/
-CCUR_PRIVATE(tresult_t)
-_tcInitPktGenThreadInitRes(
+tresult_t _tcInitPktGenThreadInitRes(
         tc_pktgen_thread_ctxt_t*     pCntx,
         tc_bkgrnd_evlogtbl_t*        pZLogCatCompTbl,
         tc_bkgrnd_evlogtbl_t*        pZLogCatSvcTbl,
@@ -676,8 +671,7 @@ _tcInitPktGenThreadInitRes(
  * description: Init sim thread resources. This function is being called
  * from background thread context.
  ***************************************************************************/
-CCUR_PRIVATE(tresult_t)
-_tcInitSimThreadInitRes(
+tresult_t _tcInitSimThreadInitRes(
         tc_sim_thread_ctxt_t*        pCntx,
         tc_bkgrnd_evlogtbl_t*        pZLogCatCompTbl,
         tc_bkgrnd_evlogtbl_t*        pZLogCatSvcTbl,
@@ -749,8 +743,7 @@ _tcInitSimThreadInitRes(
  * description: Init sim thread resources. This function is being called
  * from background thread context.
  ***************************************************************************/
-CCUR_PRIVATE(tresult_t)
-_tcInitSimSendThreadInitRes(
+tresult_t _tcInitSimSendThreadInitRes(
         tc_simsnd_thread_ctxt_t*     pCntx,
         U32                          cfgId,
         tc_bkgrnd_evlogtbl_t*        pZLogCatCompTbl,
@@ -831,9 +824,7 @@ _tcInitSimSendThreadInitRes(
  *
  * description: Cleanup Health thread resources.
  ***************************************************************************/
-CCUR_PRIVATE(tresult_t)
-_tcInitHealthThreadCleanupRes(
-        tc_health_thread_ctxt_t*     pCntx)
+tresult_t _tcInitHealthThreadCleanupRes(tc_health_thread_ctxt_t* pCntx)
 {
     CCURASSERT(pCntx);
     if(pCntx->bCondVarSet)
@@ -847,9 +838,7 @@ _tcInitHealthThreadCleanupRes(
  *
  * description: Cleanup Mib thread resources.
  ***************************************************************************/
-CCUR_PRIVATE(tresult_t)
-_tcInitMibThreadCleanupRes(
-        tc_tcplanesnmp_thread_ctxt_t*     pCntx)
+tresult_t _tcInitMibThreadCleanupRes(tc_tcplanesnmp_thread_ctxt_t* pCntx)
 {
     CCURASSERT(pCntx);
     if(pCntx->bCondVarSet)
@@ -863,9 +852,7 @@ _tcInitMibThreadCleanupRes(
  *
  * description: Cleanup background thread resources.
  ***************************************************************************/
-CCUR_PRIVATE(tresult_t)
-_tcInitBkGrndThreadCleanupRes(
-        tc_bkgrnd_thread_ctxt_t*     pCntx)
+tresult_t _tcInitBkGrndThreadCleanupRes(tc_bkgrnd_thread_ctxt_t* pCntx)
 {
     CCURASSERT(pCntx);
     return ESUCCESS;
@@ -877,9 +864,7 @@ _tcInitBkGrndThreadCleanupRes(
  * description: Cleanup thread resources. This function is being called only
  * once at cleanup.
  ***************************************************************************/
-CCUR_PRIVATE(void)
-_tcInitPktGenThreadCleanupRes(
-        tc_pktgen_thread_ctxt_t*     pCntx)
+void _tcInitPktGenThreadCleanupRes(tc_pktgen_thread_ctxt_t* pCntx)
 {
     CCURASSERT(pCntx);
 
@@ -896,9 +881,7 @@ _tcInitPktGenThreadCleanupRes(
  * description: Cleanup thread resources. This function is being called only
  * once at cleanup.
  ***************************************************************************/
-CCUR_PRIVATE(void)
-_tcInitHttpThreadCleanupRes(
-        tc_httpprc_thread_ctxt_t*     pCntx)
+void _tcInitHttpThreadCleanupRes(tc_httpprc_thread_ctxt_t* pCntx)
 {
     CCURASSERT(pCntx);
 
@@ -913,9 +896,7 @@ _tcInitHttpThreadCleanupRes(
  * description: Cleanup thread resources. This function is being called only
  * once at cleanup.
  ***************************************************************************/
-CCUR_PRIVATE(void)
-_tcInitPktPrcThreadCleanupRes(
-    tc_pktprc_thread_ctxt_t*     pCntx)
+void _tcInitPktPrcThreadCleanupRes(tc_pktprc_thread_ctxt_t* pCntx)
 {
     CCURASSERT(pCntx);
 
@@ -930,9 +911,7 @@ _tcInitPktPrcThreadCleanupRes(
  *
  * description: Cleanup and destroy resources
  ***************************************************************************/
-CCUR_PRIVATE(void)
-_tcInitSimThreadCleanupRes(
-    tc_sim_thread_ctxt_t*     pCntx)
+void _tcInitSimThreadCleanupRes(tc_sim_thread_ctxt_t* pCntx)
 {
     CCURASSERT(pCntx);
 
@@ -946,9 +925,7 @@ _tcInitSimThreadCleanupRes(
  *
  * description: Cleanup and destroy resources
  ***************************************************************************/
-CCUR_PRIVATE(void)
-_tcInitSimSendThreadCleanupRes(
-    tc_simsnd_thread_ctxt_t*     pCntx)
+void _tcInitSimSendThreadCleanupRes(tc_simsnd_thread_ctxt_t* pCntx)
 {
     CCURASSERT(pCntx);
 
@@ -956,14 +933,13 @@ _tcInitSimSendThreadCleanupRes(
         mSemCondVarSemDestroy(
             &(pCntx->tCondVarSem));
 }
+
 /***************************************************************************
  * function: _tcInitExternalLibaryRes
  *
  * description: Init Any external library component.
  ***************************************************************************/
-CCUR_PRIVATE(tresult_t)
-_tcInitExternalLibaryRes(
-        tc_gd_thread_ctxt_t*     pCntx)
+tresult_t _tcInitExternalLibaryRes(tc_gd_thread_ctxt_t* pCntx)
 {
     CCURASSERT(pCntx);
     /* Init glib for each thread for version < 2.32 */
@@ -977,23 +953,11 @@ _tcInitExternalLibaryRes(
 }
 
 /***************************************************************************
- * function: _tcInitExternalLibraryCleanupRes
- *
- * description: Cleanup Any xternal library component.
- ***************************************************************************/
-CCUR_PRIVATE(void)
-_tcInitExternalLibraryCleanupRes(
-        tc_gd_thread_ctxt_t*     pCntx)
-{}
-
-/***************************************************************************
  * function: _tcInitSharedRes
  *
  * description: Initialize shared resources
  ***************************************************************************/
-CCUR_PRIVATE(tresult_t)
-_tcInitSharedRes(
-        tc_gd_thread_ctxt_t*     pCntx)
+tresult_t _tcInitSharedRes(tc_gd_thread_ctxt_t* pCntx)
 {
     tresult_t                   _result;
     U32                         _i;
@@ -1079,9 +1043,7 @@ _tcInitSharedRes(
  *
  * description: Cleanup thread shared resources
  ***************************************************************************/
-CCUR_PRIVATE(void)
-    _tcInitCleanupSharedRes(
-    tc_gd_thread_ctxt_t*     pCntx)
+void _tcInitCleanupSharedRes(tc_gd_thread_ctxt_t* pCntx)
 {
     U16                         _i;
     tc_shared_cfgmsg_t*        _ptConfigYaml;
@@ -1090,7 +1052,7 @@ CCUR_PRIVATE(void)
 
     for(_i=0;_i<pCntx->tBkGnThd.nQEvLogTbl;_i++)
     {
-        lkfqDestQueue(&(pCntx->tQLogTbl[_i].tLkfq));
+        // lkfqDestQueue(&(pCntx->tQLogTbl[_i].tLkfq));
         lkfqDestQueue(&(pCntx->tQMibTbl[_i]));
     }
     lkfqDestQueue(&(pCntx->tQPPktProcToHttpProc));
@@ -1121,19 +1083,20 @@ CCUR_PRIVATE(void)
     pthread_mutex_destroy(&(_ptConfigYaml->tCfgMutex));
     _ptSysYaml      = tcShDGetSysYamlDesc();
     pthread_mutex_destroy(&(_ptSysYaml->tCfgMutex));
-
 }
 
-/**************** PROTECTED Functions **********************/
-CCUR_PROTECTED(tc_gd_thread_ctxt_t*)
-tcInitGetGlobalThdContext(){return(&g_ThdCntx);}
+//**************************************************************************
+//**************************************************************************
+tc_gd_thread_ctxt_t* tcInitGetGlobalThdContext(void)
+{	return(&g_ThdCntx);
+}
+
 /***************************************************************************
  * function: tcInitUsageMsgPrintBanner
  *
  * description: Transparent routing usage banner
  ***************************************************************************/
-CCUR_PROTECTED(void)
-tcInitUsageMsgPrintBanner()
+void tcInitUsageMsgPrintBanner(void)
 {
     CHAR    _strBuff[64];
     tcPrintSysLog(LOG_NOTICE,"\n");
@@ -1160,10 +1123,7 @@ tcInitUsageMsgPrintBanner()
  *
  * description: Read input from console
  ***************************************************************************/
-CCUR_PROTECTED(tresult_t)
-tcInitReadFromConsole(
-        tc_ldcfg_t* pCfg,
-        S32 argc, CHAR*  argv[])
+tresult_t tcInitReadFromConsole(tc_ldcfg_t* pCfg, S32 argc, CHAR*  argv[])
 {
     S32                 _i;
     tresult_t           _result;
@@ -1183,6 +1143,11 @@ tcInitReadFromConsole(
             _result = ESUCCESS;
         for( _i = 1; _i < argc; ++_i )
         {
+			if(!strcmp(argv[_i], "-help"))
+			{
+				transcUsageMsgPrint();
+				exit(0);
+			}
             if( !strcmp( argv[_i], "-i" ) )
             {
                 ccur_strlcpy(pCfg->tConfigYamlLdCfg.strCmdArgMonIntf,
@@ -1389,8 +1354,7 @@ tcInitReadFromConsole(
  *
  * description: Initiaze the config files
  ***************************************************************************/
-CCUR_PROTECTED(tresult_t)
-tcInitLoadConfigFiles(tc_gd_thread_ctxt_t* pCntx)
+tresult_t tcInitLoadConfigFiles(tc_gd_thread_ctxt_t* pCntx)
 {
     tresult_t                   _result;
     BOOL                        _bBwSimMode;
@@ -1493,8 +1457,7 @@ tcInitLoadConfigFiles(tc_gd_thread_ctxt_t* pCntx)
  * description: Daemonization by Forking a process and
  * killing the parent process.
  ***************************************************************************/
-CCUR_PROTECTED(tresult_t)
-tcInitDaemonize(BOOL bDaemonize)
+tresult_t tcInitDaemonize(BOOL bDaemonize)
 {
     tresult_t   _result;
 
@@ -1544,8 +1507,7 @@ tcInitDaemonize(BOOL bDaemonize)
  *
  * description: Switch to daemon mode by killing parent process after forking.
  ***************************************************************************/
-CCUR_PROTECTED(void)
-tcInitIsSwitchDaemonMode(BOOL bDaemonize)
+void tcInitIsSwitchDaemonMode(BOOL bDaemonize)
 {
     if (bDaemonize)
     {
@@ -1560,7 +1522,6 @@ tcInitIsSwitchDaemonMode(BOOL bDaemonize)
          * Display some additional info to the console if not running
          *   in daemon mode.
          */
-        tcInitUsageMsgPrintBanner();
         tcPrintSysLog(LOG_INFO,
             "--->%s started. Send SIGTERM, SIGSTOP, or SIGQUIT to "
             "stop process.<----\n", TRANSC_PROCNAME);
@@ -1572,10 +1533,7 @@ tcInitIsSwitchDaemonMode(BOOL bDaemonize)
  *
  * description: Check status
  ***************************************************************************/
-CCUR_PROTECTED(BOOL)
-tcInitIsInitSuccess(
-        tc_gd_thread_ctxt_t*    pCntx,
-        tc_tr_comptype_e       eCompType)
+BOOL tcInitIsInitSuccess(tc_gd_thread_ctxt_t* pCntx, tc_tr_comptype_e eCompType)
 {
     U32     _i;
     BOOL    _bInitSuccess;
@@ -1623,9 +1581,7 @@ tcInitIsInitSuccess(
  * extra thread in the system.
  * Note: Pkt gen and http proc components are currently under one thread.
  ***************************************************************************/
-CCUR_PROTECTED(tresult_t)
-tcInitRunThreads(
-        tc_gd_thread_ctxt_t*             pCntx)
+tresult_t tcInitRunThreads(tc_gd_thread_ctxt_t* pCntx)
 {
     BOOL                _bInit;
     tresult_t           _result;
@@ -1817,9 +1773,7 @@ tcInitRunThreads(
  * component and the other one is snmp mib thread.
  * Note: Pkt gen and http proc components are currently under one thread.
  ***************************************************************************/
-CCUR_PROTECTED(tresult_t)
-tcInitRes(
-        tc_gd_thread_ctxt_t*             pCntx)
+tresult_t tcInitRes( tc_gd_thread_ctxt_t* pCntx)
 {
     tresult_t       _result;
     U16             _i;
@@ -1953,22 +1907,18 @@ tcInitRes(
  * description: Initialize main event logging, which belongs to background
  * thread.
  ***************************************************************************/
-CCUR_PROTECTED(tresult_t)
-tcInitEventLog(
-        tc_gd_thread_ctxt_t*    pCntx)
+tresult_t tcInitEventLog(tc_gd_thread_ctxt_t* pCntx)
 {
-    tresult_t                   _result;
+    tresult_t _result;
 
     CCURASSERT(pCntx);
 
-    _result = tcBkgrndInitEventLog(
-            &(pCntx->tBkGnThd),
+    _result = tcBkgrndInitEventLog(&(pCntx->tBkGnThd),
             pCntx->tMibThd.tConfig.strCmdArgLogConfLoc);
 
     if(ESUCCESS !=  _result)
     {
-        tcPrintSysLog(LOG_ERR,
-                "Error, Load log config from: %s\n",
+        tcPrintSysLog(LOG_ERR, "Error, Load log config from: %s\n",
                 pCntx->tMibThd.tConfig.strCmdArgLogConfLoc);
     }
 
@@ -1982,10 +1932,7 @@ tcInitEventLog(
  * the program. We will wait until all the threads exit then properly
  * clean up all the threads resources.
  ***************************************************************************/
-CCUR_PROTECTED(void)
-        tcInitCleanupRes(
-        mthread_result_t*        pExitCode,
-        tc_gd_thread_ctxt_t*     pCntx)
+void tcInitCleanupRes(mthread_result_t* pExitCode, tc_gd_thread_ctxt_t* pCntx)
 {
     tresult_t           _PollSts;
     U32                 _i;
@@ -2057,8 +2004,7 @@ CCUR_PROTECTED(void)
     _tcInitBkGrndThreadCleanupRes(&(pCntx->tBkGnThd));
     /* Clean up Shared resources */
     _tcInitCleanupSharedRes(pCntx);
-    /* Clean up Media hawk resources */
-    _tcInitExternalLibraryCleanupRes(pCntx);
     /* Close logging resources */
     evLogCloseLogicalLog();
+	return;
 }

@@ -16,10 +16,9 @@
 
 #include "tcinit.h"
 
-/**************** PRIVATE Functions **********************/
-
-CCUR_PRIVATE(void)
-_transCUsageMsgPrint()
+//*********************************************************************************
+//*********************************************************************************
+void transcUsageMsgPrint(void)
 {
     tcInitUsageMsgPrintBanner();
     tcPrintSysLog(LOG_INFO,"USAGE:  transc [-<flag> [<val>],...]\n");
@@ -43,89 +42,48 @@ _transCUsageMsgPrint()
     tcPrintSysLog(LOG_INFO,"-dmac   [address],      outgoing interface destination MAC address\n");
     tcPrintSysLog(LOG_INFO,"-smac   [address],      outgoing interface source MAC address\n");
     tcPrintSysLog(LOG_INFO,"-d,                     daemonize\n");
+	return;
 }
 
-/**************** PUBLIC Functions **********************/
-CCUR_PUBLIC(int)
-main( int argc, char *argv[] )
+//*********************************************************************************
+//*********************************************************************************
+int main(int argc, char *argv[])
 {
     tresult_t               _result;
-    BOOL                    _bUsageMsg;
-    BOOL                    _bLdCfgFail;
-    BOOL                    _bLdProcDFail;
-    BOOL                    _bLdInitResFail;
-    BOOL                    _bLdThdRunFail;
-    mthread_result_t        _tThdExitSts;
     tc_gd_thread_ctxt_t*    _pGlbThdCntx;
 
-    do
-    {
-        _bLdCfgFail         = TRUE;
-        _bLdProcDFail       = TRUE;
-        _bLdInitResFail     = TRUE;
-        _bLdThdRunFail      = TRUE;
-        _bUsageMsg          = TRUE;
+	while(1)
+	{
         _pGlbThdCntx = tcInitGetGlobalThdContext();
         /* Command line will overwrites config file values. */
-        _result = tcInitReadFromConsole(
-                &(_pGlbThdCntx->tMibThd.tConfig),argc,argv);
+        _result = tcInitReadFromConsole(&(_pGlbThdCntx->tMibThd.tConfig), argc, argv);
         if(ESUCCESS != _result)
             break;
         _result = tcInitEventLog(_pGlbThdCntx);
         if(ESUCCESS != _result)
             break;
-        _result = tcInitDaemonize(
-                _pGlbThdCntx->tMibThd.tConfig.bDaemonize);
+        _result = tcInitDaemonize(_pGlbThdCntx->tMibThd.tConfig.bDaemonize);
         if(ESUCCESS != _result)
             break;
-        _bLdProcDFail = FALSE;
         _result =
                 tcInitLoadConfigFiles(_pGlbThdCntx);
         if(ESUCCESS != _result)
             break;
-        _bLdCfgFail = FALSE;
         /* Perform all resource Initialization */
         _result = tcInitRes(_pGlbThdCntx);
         if(ESUCCESS != _result)
             break;
-        _bLdInitResFail = FALSE;
         /* Run Thread(s) */
         _result = tcInitRunThreads(_pGlbThdCntx);
         if(ESUCCESS != _result)
             break;
-        _bLdThdRunFail = FALSE;
         /* Signal the parent process that it is now OK to exit if
          * in daemon mode. Otherwise just print banner and continue on.
          */
-        tcInitIsSwitchDaemonMode(
-                _pGlbThdCntx->tMibThd.tConfig.bDaemonize);
+        tcInitIsSwitchDaemonMode(_pGlbThdCntx->tMibThd.tConfig.bDaemonize);
         tcBkgrndThreadEntry(&(_pGlbThdCntx->tBkGnThd));
-        _bUsageMsg = FALSE;
-    }while(FALSE);
-
-    if(_bUsageMsg)
-        _transCUsageMsgPrint();
-
-    /* Cleanup all resources */
-    tcInitCleanupRes(
-            &_tThdExitSts,
-            _pGlbThdCntx);
-
-    if(ESUCCESS != _result ||
-       ESUCCESS != _tThdExitSts)
-    {
-        if(_bLdCfgFail)
-            _result = 2;
-        else if(_bLdProcDFail)
-            _result = 3;
-        else if(_bLdInitResFail)
-            _result = 4;
-        if(_bLdThdRunFail)
-            _result = 5;
-        else
-            _result = 1;
-    }
-
-    exit(_result);
+	}
+    // Cleanup all resources
+    // tcInitCleanupRes(&_tThdExitSts, _pGlbThdCntx);
+	exit(0);
 }
-

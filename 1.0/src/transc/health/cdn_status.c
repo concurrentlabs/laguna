@@ -201,6 +201,7 @@ static int16_t ccur_rr_active_sites(tc_health_thread_ctxt_t * pCntx, const char 
     curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)& url_data);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 3);
  
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
@@ -410,6 +411,7 @@ static int16_t ats_rr_query(tc_health_thread_ctxt_t * pCntx, const char * ip)
     curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)& url_data);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 3);
  
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)

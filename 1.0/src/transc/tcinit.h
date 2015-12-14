@@ -83,8 +83,7 @@ CCUR_PROTECTED(tresult_t)
 tcInitRunThreads(
         tc_gd_thread_ctxt_t*             pCntx);
 
-CCUR_PROTECTED(tresult_t)
-tcInitDaemonize(BOOL bDaemonize);
+tresult_t tcInitDaemonize(BOOL bDaemonize);
 
 CCUR_PROTECTED(tresult_t)
 tcInitReadFromConsole(
