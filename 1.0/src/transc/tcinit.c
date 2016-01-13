@@ -1123,7 +1123,7 @@ void tcInitUsageMsgPrintBanner(void)
  *
  * description: Read input from console
  ***************************************************************************/
-tresult_t tcInitReadFromConsole(tc_ldcfg_t* pCfg, S32 argc, CHAR*  argv[])
+tresult_t tcInitReadFromConsole(tc_ldcfg_t * pCfg, int argc, char *  argv[])
 {
     S32                 _i;
     tresult_t           _result;

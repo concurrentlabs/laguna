@@ -32,7 +32,7 @@ extern "C" {
 #include "tcutils.h"
 #include "tctemp.h"
 
-struct _tc_gd_thread_ctxt_s
+typedef struct _tc_gd_thread_ctxt_s
 {
     /* Common Mutex for all threads */
     U32                         nSimSendWThreadsNum;
@@ -71,9 +71,7 @@ struct _tc_gd_thread_ctxt_s
     tc_sim_thread_ctxt_t        tSimThd;
     /* Sim/Simsnd thread */
     tc_simsnd_thread_ctxt_t     tSimSndThdTbl[TRANSC_SIM_THD_MAX];
-} 
-
-typedef struct _tc_gd_thread_ctxt_s tc_gd_thread_ctxt_t;
+} tc_gd_thread_ctxt_t;
 
 tresult_t tcInitRes(tc_gd_thread_ctxt_t* pCntx);
 
