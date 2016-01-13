@@ -14,24 +14,15 @@ TARGETDIR       = $(TC_HOME)/lib
 TARGETTYPE      = STATICLIB
 
 #-------------------------------------------------------------------------
-# Directories
-#-------------------------------------------------------------------------
-MISC_SRCDIR     	= $(TC_HOME)/src/misc
-ZLOG_SRCDIR     	= $(TC_HOME)/src/zlog/src
-LIBLFDS_SRCDIR     	= $(TC_HOME)/src/liblfds/liblfds611
-
-#-------------------------------------------------------------------------
 # Library Dependencies
 #-------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------
 # Compiler Options
 #-------------------------------------------------------------------------
-CFLAGS_INC     += -I$(MISC_SRCDIR) -I$(LIBLFDS_SRCDIR)/inc -I$(LIBLFDS_SRCDIR)/src -I$(ZLOG_SRCDIR)
+CFLAGS_INC += -I/usr/local/include
 
 #-------------------------------------------------------------------------
 # Standard Makefile Inclusion
 #-------------------------------------------------------------------------
 -include $(TC_HOME)/tcgmake.mk
-
-
