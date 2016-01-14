@@ -1371,9 +1371,7 @@ tresult_t tcInitLoadConfigFiles(tc_gd_thread_ctxt_t* pCntx)
                 &(pCntx->tMibThd.tConfig.tSysYamlParser));
         if(ESUCCESS != _result)
         {
-            evLogTraceSys(
-                    evLogLvlError,
-                    (char*) "Unable to load Config.yaml");
+            evLogTraceSys( evLogLvlError, (char*) "Unable to load sys.yaml");
             break;
         }
         _result = tcLoadUnmarshallConfigYaml(
@@ -1383,9 +1381,7 @@ tresult_t tcInitLoadConfigFiles(tc_gd_thread_ctxt_t* pCntx)
                 &(pCntx->tMibThd.tConfig.tConfigYamlParser));
         if(ESUCCESS != _result)
         {
-            evLogTraceSys(
-                    evLogLvlError,
-                    (char*) "Unable to load sys.yaml");
+            evLogTraceSys( evLogLvlError, (char*) "Unable to load config.yaml");
             break;
         }
         /* Below logic is to check and

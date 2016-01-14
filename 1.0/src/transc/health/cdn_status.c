@@ -131,7 +131,7 @@ void cdn_status(tc_health_thread_ctxt_t * pCntx)
 static int16_t cdn_query(tc_health_thread_ctxt_t * _pCntx, char *ip)
 {
     if((strcmp(ip, "127.0.0.1") == 0) || (ip[0]) == (char)0)
-        return 0 ;
+        return 0;
 
     switch(_pCntx->healthCheck)
     {
