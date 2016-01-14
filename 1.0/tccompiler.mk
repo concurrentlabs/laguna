@@ -43,11 +43,9 @@ CFLAGS_INC     += -I.
 CFLAGS_OPTS    += -Wall -Werror -Wextra -Wno-unused-parameter -Wno-deprecated-declarations
 ifndef CC
 CC             := gcc
-# CC             := /opt/centos/devtoolset-1.1/root/usr/bin/gcc
 endif
 ifndef CXX
 CXX            := g++
-# CXX            := CXX=/opt/centos/devtoolset-1.1/root/usr/bin/g++
 endif
 ifndef AR
 AR             := ar
@@ -57,7 +55,6 @@ SHAREDLIBEXT   := so
 #LDFLAGS_DEFS
 #LDFLAGS_INC
 LD				:= g++
-# LD              := /opt/centos/devtoolset-1.1/root/usr/bin/g++
 #CFLAGS_INC	+= -isystem /usr/include/glib-2.0 -isystem /usr/lib/glib-2.0/include
 
 #-------------------------------------------------------------------------
@@ -129,5 +126,4 @@ CFLAGS_OPTS        += -DTRANSC_VER='"$(TRANSCDIR_VER)"' -DTRANSC_REL='"$(TRANSCD
 #-------------------------------------------------------------------------
 
 CFLAGS        += $(CFLAGS_OPTS) $(CFLAGS_DEFS) $(CFLAGS_INC)
-CXXFLAGS      += $(CFLAGS_OPTS) $(CFLAGS_DEFS) $(CFLAGS_INC)
 LDFLAGS       += $(LDFLAGS_OPTS) $(LDFLAGS_DEFS) $(LDFLAGS_INC)
