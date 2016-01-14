@@ -19,6 +19,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <list>
 #include <string>
 #include <tuple>
