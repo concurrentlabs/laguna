@@ -1,0 +1,84 @@
+# Non-Server information is added or changed here. To add or change Server configurations then look at servers.yaml
+
+# IMPORTANT - DO NOT leave any string values empty (missing) or set to None. Make sure to put '' so that strings are processed correctly!!
+
+# KEEP geo: restrict: False!
+# debug_ip: ip - This ip should be a well known outside IP for debugging the GeoIP feature. This IP will only come into play if debug: True is set in the config.yaml file.
+
+debug:  # Setting the debug config to True will print out any track back (trace) statements of the call stack to the browser.
+    False
+
+port:  # The default port should be 80 but can be set here to anything you want.
+    8088
+
+msg_code:  # ZeroMQ code that the TCS SNMP AgentX daemon is looking for. This gets send when an update has been made to the config. When the TCS SNMP AgentX daemon receives a connection and then this command, it re-reads the config back in.
+    - 10
+
+http_response_codes:  # Follows standard http codes but can be modified if a player requires a specific value for existing logic, etc.
+    found: 200
+    redirect: 307
+    forbidden: 403
+    not_found: 404
+    general_error: 500
+
+logging:  # Set to false to not log anything except exceptions.
+    True
+
+log_file:  # Set cron up to rotate the logs... - If the path starts with '../' then it looks for the log directory in the app root.
+    '../logs/request_router.log'
+
+errors_log_file:  # Set cron up to rotate the logs... - If the path starts with '../' then it looks for the log directory in the app root.
+    '../logs/request_router_errors.log'
+
+log_format:  # Format for logs.
+    '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+
+log_date_format:  # Format for date within logs.
+    '%m-%d %H:%M'
+
+log_utc:  # Default is False so it uses local time.
+    False
+
+log_when:  # Valid values are: 'S' - Seconds, 'M' - Minutes, 'H' - Hours, 'D' - Days, 'W0'-'W6 - Weekday (0=Monday...6=Sunday), 'midnight' - Roll over at midnight
+    'midnight'
+
+log_rotation:  # Only applies for 'S', 'M', 'H', 'D' of log_when above.
+    24
+
+log_backups:  # Number of file rotations before recycling.
+    7
+
+cookie_expires:  # Stubbed out - Not currently used.
+    hls: 1
+    hds: 3600
+    mss: 1
+
+alert_email:  # from_email, to_email and smtp_server must be valid for alert thread to become active.
+    interval: 10  # Seconds to check for issues.
+    to_email: 'chris.jones@ccur.com'
+    from_email: 'chris.jones@ccur.com'
+    subject: 'API Server Issue'
+    smtp_server: ''  #'mail.ccur.com' # MUST be '' and NOT None or empty if there is no smtp_server value.
+
+keys:
+    secret: 'could_be_any_secret_key_value'
+
+api_ip_allow_range:  # IMPORTANT! - All is denied except these
+   - 129.75.21.0/24
+   - 129.75.25.0/24
+   - 10.75.26.0/24
+   - 10.76.112.0/24
+
+# IMPORTANT
+# PyCurl needs to be installed for the PURGE command to work. CentOS 6.4 version of 'pip install pycurl' looks for
+#  the gcc compiler in a specific directory where it does not exist (on our dev version). So, the following fixes it:
+# 
+# yum -y update
+# yum install -y libcurl-devel
+#
+# cd /opt
+# mkdir -p centos/devtoolset-1.1/root/usr/bin
+# cd centos/devtoolset-1.1/root/usr/bin/
+# ln -s /usr/bin/gcc /opt/centos/devtoolset-1.1/root/usr/bin/gcc
+# pip install pycurl
+

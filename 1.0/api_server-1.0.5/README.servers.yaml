@@ -1,0 +1,28 @@
+# Server information is added or changed here. To add or change non-server configurations then look at config.yaml
+# ALL routing options also check to see if the server is available (up or down).
+
+servers:  # List of available Transparent Caching Servers
+    - 10.76.101.10
+
+server_defaults:  # Sets basic defaults for the ZeroMQ port
+    port: 5555
+
+server_ports:  # Ability to override a port for a specific Transparent Caching Server
+    10.76.101.10: 5555
+
+servers_interface_ip:  # C&C (Command and Control) IP
+    - 10.76.101.10
+
+server_config:  # File name of the config and Path of the config - Config of the Transparent Caching Server
+    file: 'config.yaml'
+    path: '/etc/sysconfig/transparent_caching/'
+
+purge:
+    verb: PURGE  # HTTP verb method to use.
+    url: /tcspurge/ccur/video/  # URL rewrite for Edge - .../video/ytb/* or .../video/* etc can be used.
+    targets:  # Targets to cycle through on purge. If url signature contains '/video/*' then all in this list are called on the Edge.
+      - ytb
+      - nfl
+    edges:  # List of ALL Edges that may receive the PURGE request.
+      - 10.76.101.31
+      #- 10.76.101.32

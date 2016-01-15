@@ -1,0 +1,28 @@
+# DO NOT MODIFY: Machine Generated YAML File!
+# ALL values MUST NOT BE EMPTY! If the value needs to be empty then use a 0 for a numeric value or '' for a string.
+
+servers:
+    - 10.76.101.10
+
+server_defaults:
+    port: 5555
+
+server_ports:
+    10.76.101.10: 5555
+
+servers_interface_ip:
+    - 10.76.101.10
+
+server_config:
+    file: 'config.yaml'
+    path: '/etc/sysconfig/transparent_caching/'
+
+purge:
+    verb: PURGE
+    url: /tcspurge/ccur/video/
+    targets:
+      - ytb
+      - nfl
+    edges:
+      - 10.76.101.31
+

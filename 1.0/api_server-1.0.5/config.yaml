@@ -1,0 +1,67 @@
+# DO NOT MODIFY: Machine Generated YAML File!
+# ALL values MUST NOT BE EMPTY! If the value needs to be empty then use a 0 for a numeric value or '' for a string.
+
+debug: 
+    False
+
+port: 
+    8088
+
+msg_code:
+    - 10
+
+http_response_codes:
+    redirect: 302
+    found: 200
+    forbidden: 403
+    not_found: 404
+    general_error: 500
+
+logging: 
+    True
+
+log_file: 
+    '../logs/api_server.log'
+
+errors_log_file:
+    '../logs/api_server_errors.log'
+
+log_format:
+    '%(asctime)s %(levelname)-8s %(message)s'
+
+log_date_format: 
+    '%m-%d %H:%M'
+
+log_utc:
+    False
+
+log_when:
+    'midnight'
+
+log_rotation: # 24
+    0
+
+log_backups:
+    7
+
+cookie_expires:
+    hls: 1
+    hds: 3600
+    mss: 1
+
+alert_email:
+    from_email: '@ccur.com'
+    to_email: '@ccur.com'
+    interval: 10
+    smtp_server: ''
+    subject: 'API Server Issue'
+
+keys:
+    secret: 'could_be_any_secret_key_value'
+
+api_ip_allow_range:
+    - 10.76.101.0/24
+    - 129.75.21.0/24
+    - 129.75.25.0/24
+    - 10.76.162.0/24
+
