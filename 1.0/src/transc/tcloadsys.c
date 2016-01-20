@@ -430,78 +430,35 @@ _tcLoadSysYamlConfRead(
 
 /**************** PROTECTED Functions **********************/
 
-CCUR_PROTECTED(tresult_t)
-tcLoadUnmarshallSysYaml(
-        evlog_t*                        pEvLogQ,
-        evlog_desc_t*                   pLogDescSys,
-        CHAR*                           strRdConfigLoc,
-        tc_ldsyscfg_conf_t*             pLdCfg,
-        yaml_parser_t*                  pYmlParser)
+int32_t tcLoadUnmarshallSysYaml(evlog_t* pEvLogQ, evlog_desc_t* pLogDescSys,
+	char * strRdConfigLoc, tc_ldsyscfg_conf_t* pLdCfg, yaml_parser_t* pYmlParser)
 {
-    tresult_t   _result;
-    BOOL        _bYmlPrsInit;
-    FILE*       _f;
+    FILE * stream = (FILE*)0;;
 
-    do
+	if((strRdConfigLoc[0] == (char)0))
+            return ESUCCESS;
+	if(!(stream = fopen(strRdConfigLoc, "r")))
+	{
+		evLogTrace(pEvLogQ, evLogLvlFatal, pLogDescSys,
+				"Error, unable to open file:%s", strRdConfigLoc);
+		return EFAILURE;
+	}
+	if(_tcLoadSysYamlConfInit(stream,pYmlParser) == EFAILURE)
+	{
+		evLogTrace( pEvLogQ, evLogLvlFatal, pLogDescSys,
+			"Error, sys.yaml read init %s, file doesn't exist", strRdConfigLoc);
+		fclose(stream);
+		return EFAILURE;
+	}
+    if(_tcLoadSysYamlConfRead(pEvLogQ, pLogDescSys, pYmlParser, stream, pLdCfg, TRUE) != ESUCCESS)
     {
-        _f              = NULL;
-        _bYmlPrsInit    = FALSE;
-        _result         = EFAILURE;
-        if('\0' == strRdConfigLoc[0])
-        {
-            _result = ESUCCESS;
-            break;
-        }
-        _f = fopen(strRdConfigLoc, "rb");
-        if(NULL == _f)
-        {
-            evLogTrace(
-                    pEvLogQ,
-                    evLogLvlFatal,
-                    pLogDescSys,
-                   "Error, unable to open file:%s",
-                   strRdConfigLoc);
-            break;
-        }
-        _result = _tcLoadSysYamlConfInit(_f,pYmlParser);
-        if(ESUCCESS != _result)
-        {
-            evLogTrace(
-                    pEvLogQ,
-                    evLogLvlFatal,
-                    pLogDescSys,
-                   "Error, sys.yaml read init %s, file doesn't exist",
-                   strRdConfigLoc);
-            break;
-        }
-        _bYmlPrsInit = TRUE;
-        _result = _tcLoadSysYamlConfRead(
-                pEvLogQ,
-                pLogDescSys,
-                pYmlParser,
-                _f,
-                pLdCfg,
-                TRUE);
-        if(ESUCCESS != _result)
-        {
-            evLogTrace(
-                    pEvLogQ,
-                    evLogLvlFatal,
-                    pLogDescSys,
-                   "Error, sys.yaml read %s",
-                   strRdConfigLoc);
-            break;
-        }
-        _result = ESUCCESS;
-    }while(FALSE);
+		evLogTrace(pEvLogQ, evLogLvlFatal, pLogDescSys, "Error, sys.yaml read %s", strRdConfigLoc);
+		fclose(stream);
+		return EFAILURE;
+    }
 
-    if(_bYmlPrsInit)
-        yaml_parser_delete(pYmlParser);
-    if(_f)
-        fclose(_f);
-    if(ESUCCESS == _result)
-        _result = _tcLoadSysValidateArgs(
-                pEvLogQ,pLogDescSys,pLdCfg);
-
-    return _result;
+	yaml_parser_delete(pYmlParser);
+	fclose(stream);
+    _tcLoadSysValidateArgs(pEvLogQ,pLogDescSys,pLdCfg);
+    return ESUCCESS;
 }

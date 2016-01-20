@@ -232,11 +232,8 @@ static int16_t ccur_rr_active_sites(tc_health_thread_ctxt_t * pCntx, const char 
     json_t * edge_cluster;
     json_object_foreach(j, key, edge_cluster)
     {
-        evLogTrace(
-                pCntx->pQHealthToBkgrnd,
-                evLogLvlDebug,
-                &(pCntx->tLogDescSys),
-                "Processing edge_cluster %s.", key);
+        evLogTrace(pCntx->pQHealthToBkgrnd, evLogLvlDebug,
+                &(pCntx->tLogDescSys), "Processing edge_cluster %s.", key);
         void *iter = json_object_iter(edge_cluster);
         if(process_edge(json_object_iter_value(iter)))
         {
@@ -395,7 +392,6 @@ static int16_t ats_rr_query(tc_health_thread_ctxt_t * pCntx, const char * ip)
     CURLcode res;
     UrlData_t url_data;
     json_error_t error;
-    // int16_t ret = 0;
     const char * url_fmt = "http://%s:3333/crs/locations/caches";
     char url[64];
 
@@ -426,5 +422,6 @@ static int16_t ats_rr_query(tc_health_thread_ctxt_t * pCntx, const char * ip)
         return 0;
     // printf("%s\n", url_data.buffer);
     // ...parse json...
+    json_decref(root);
     return 1;
 }

@@ -855,9 +855,7 @@ _tcLoadYamlValidateRoutingArgs(
     return _result;
 }
 
-CCUR_PRIVATE(tresult_t)
-_tcLoadYamlInit(FILE*             f,
-        yaml_parser_t*           prs)
+int32_t tcLoadYamlInit(FILE * f, yaml_parser_t* prs)
 {
     tresult_t       _result;
 
@@ -1499,96 +1497,44 @@ _tcLoadYamlRead(
  *
  * description: unmarshall config.yaml file.
  ***************************************************************************/
-CCUR_PROTECTED(tresult_t)
-tcLoadUnmarshallConfigYaml(
-        evlog_t*                        pEvLogQ,
-        evlog_desc_t*                   pLogDescSys,
-        CHAR*                           strRdConfigLoc,
-        tc_ldcfg_conf_t*                pLdCfg,
-        yaml_parser_t*                  pYmlParser)
+int32_t tcLoadUnmarshallConfigYaml(evlog_t* pEvLogQ, evlog_desc_t* pLogDescSys,
+        char * strRdConfigLoc, tc_ldcfg_conf_t* pLdCfg, yaml_parser_t* pYmlParser)
 {
-    tresult_t   _result;
-    BOOL        _bYmlPrsInit;
-    FILE*       _f;
+    FILE * stream = (FILE*)0;
 
-    do
+	stream = (FILE*)0;
+    if(!(stream = fopen(strRdConfigLoc, "r")))
     {
-        _f              = NULL;
-        _bYmlPrsInit    = FALSE;
-        _result         = EFAILURE;
-        _f = fopen(strRdConfigLoc, "rb");
-        if(NULL == _f)
-        {
-            evLogTrace(
-                    pEvLogQ,
-                    evLogLvlFatal,
-                    pLogDescSys,
-                   "Error, unable to open file:%s",
-                   strRdConfigLoc);
-            break;
-        }
-        _result = _tcLoadYamlInit(_f,pYmlParser);
-        if(ESUCCESS != _result)
-        {
-            evLogTrace(
-                    pEvLogQ,
-                    evLogLvlFatal,
-                    pLogDescSys,
-                   "Error, trconfig read init %s\n",
-                   strRdConfigLoc);
-            break;
-        }
-        _bYmlPrsInit = TRUE;
-        _result = _tcLoadYamlRead(
-                pEvLogQ,
-                pLogDescSys,
-                pYmlParser,
-                _f,
-                pLdCfg,
-                TRUE);
-        if(ESUCCESS != _result)
-        {
-            evLogTrace(
-                    pEvLogQ,
-                    evLogLvlFatal,
-                    pLogDescSys,
-                   "Error, config read %s\n",
-                   strRdConfigLoc);
-            break;
-        }
-        _result = ESUCCESS;
-    }while(FALSE);
+    	evLogTrace(pEvLogQ, evLogLvlFatal, pLogDescSys,
+			"Error, unable to open file:%s", strRdConfigLoc);
+		return EFAILURE;
+	}
+	if((tcLoadYamlInit(stream, pYmlParser) != ESUCCESS))
+	{
+		evLogTrace(pEvLogQ, evLogLvlFatal, pLogDescSys,
+			"Error, trconfig read init %s\n", strRdConfigLoc);
+		fclose(stream);
+		return EFAILURE;
+	}
+    if(_tcLoadYamlRead(pEvLogQ, pLogDescSys, pYmlParser, stream, pLdCfg, TRUE) != ESUCCESS)
+    {
+		evLogTrace(pEvLogQ, evLogLvlFatal, pLogDescSys, "Error, config read %s\n", strRdConfigLoc);
+		fclose(stream);
+		return EFAILURE;
+	}
+	yaml_parser_delete(pYmlParser);
+    fclose(stream);
 
-    if(_bYmlPrsInit)
-        yaml_parser_delete(pYmlParser);
-    if(_f)
-        fclose(_f);
-    if(ESUCCESS == _result)
+    if((_tcLoadYamlValidateMainArgs(pEvLogQ,pLogDescSys,pLdCfg) == ESUCCESS))
     {
-        _result = _tcLoadYamlValidateMainArgs(
-                pEvLogQ,pLogDescSys,pLdCfg);
-        if(ESUCCESS == _result)
-            _result = _tcLoadYamlValidateRoutingArgs(
-                    pEvLogQ,pLogDescSys,pLdCfg);
-    }
-    if(ESUCCESS == _result)
-    {
-        evLogTrace(
-                pEvLogQ,
-                evLogLvlInfo,
-                pLogDescSys,
-                "Reading config from: %s success!",
-                strRdConfigLoc);
+		_tcLoadYamlValidateRoutingArgs(pEvLogQ,pLogDescSys,pLdCfg);
+        evLogTrace(pEvLogQ, evLogLvlInfo, pLogDescSys,
+			"Reading config from: %s success!", strRdConfigLoc);
     }
     else
     {
-        evLogTrace(
-                pEvLogQ,
-                evLogLvlError,
-                pLogDescSys,
-                "Reading config from: %s failure!",
-                strRdConfigLoc);
+        evLogTrace(pEvLogQ, evLogLvlError, pLogDescSys,
+			"Reading config from: %s failure!", strRdConfigLoc);
     }
-
-    return _result;
+	return ESUCCESS;
 }

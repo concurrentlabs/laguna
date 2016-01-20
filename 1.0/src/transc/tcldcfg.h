@@ -207,7 +207,7 @@ typedef struct _tc_sysldcfg_conf_s
                tc_ldsyscfg_conf_t;
 
 /***********************main config****************************************/
-struct _tc_ldcfg_s
+typedef struct _tc_ldcfg_s
 {
     /* Hardcoded config values */
     BOOL                    bLockQ;
@@ -224,25 +224,15 @@ struct _tc_ldcfg_s
     /* Loadable sys.yaml */
     yaml_parser_t           tSysYamlParser;
     tc_ldsyscfg_conf_t      tSysYamlLdCfg;
-};
-typedef struct _tc_ldcfg_s
-               tc_ldcfg_t;
+} tc_ldcfg_t;
 
-CCUR_PROTECTED(tresult_t)
-tcLoadUnmarshallConfigYaml(
-        evlog_t*                        pEvLogQ,
-        evlog_desc_t*                   pLogDescSys,
-        CHAR*                           strRdConfigLoc,
-        tc_ldcfg_conf_t*                pLdCfg,
-        yaml_parser_t*                  pYmlParser);
+int32_t tcLoadUnmarshallConfigYaml(evlog_t* pEvLogQ, evlog_desc_t* pLogDescSys,
+        char *  strRdConfigLoc, tc_ldcfg_conf_t* pLdCfg, yaml_parser_t* pYmlParser);
 
-CCUR_PROTECTED(tresult_t)
-tcLoadUnmarshallSysYaml(
-        evlog_t*                        pEvLogQ,
-        evlog_desc_t*                   pLogDescSys,
-        CHAR*                           strRdConfigLoc,
-        tc_ldsyscfg_conf_t*             pLdCfg,
-        yaml_parser_t*                  pYmlParser);
+int32_t tcLoadUnmarshallSysYaml(evlog_t* pEvLogQ, evlog_desc_t* pLogDescSys,
+	char * strRdConfigLoc, tc_ldsyscfg_conf_t* pLdCfg, yaml_parser_t* pYmlParser);
+
+int32_t tcLoadYamlInit(FILE * f, yaml_parser_t* prs);
 
 #ifdef __cplusplus
 }
