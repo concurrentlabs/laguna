@@ -26,9 +26,6 @@ using namespace std;
 
 #include <inttypes.h>
 
-#include <ts/ts.h>
-#include <ts/experimental.h>
-
 #define PLUGIN_NAME "cache-hndl"
 
 // #define __ATS_6_0_0__ 1
