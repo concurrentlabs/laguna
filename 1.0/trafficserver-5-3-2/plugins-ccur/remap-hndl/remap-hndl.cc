@@ -21,7 +21,6 @@ using namespace std;
 
 #include <inttypes.h>
 
-#include <ts/ts.h>
 #include <remap.h>
 
 //************** global objects **************
