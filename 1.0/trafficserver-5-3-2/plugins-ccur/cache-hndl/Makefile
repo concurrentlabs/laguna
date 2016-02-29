@@ -4,7 +4,8 @@ all: cache-hndl-v1.so cache-hndl-v2.so cache-hndl-v3.so
 
 CXX=g++
 # CXX=/opt/centos/devtoolset-1.1/root/usr/bin/c++
-CCFLAGS=-I../../lib -I../../proxy/api/ts -I../include -D__STDC_FORMAT_MACROS -std=gnu++11
+# CCFLAGS=-I../../lib -I../../proxy/api/ts -I../include -D__STDC_FORMAT_MACROS -std=gnu++11
+CCFLAGS=-I/usr/local/include/ts -I../include -D__STDC_FORMAT_MACROS -std=gnu++11
 
 cache-hndl-v1.o: cache-hndl-v1.cc ../include/ccur_remap.h
 	$(CXX) $(CCFLAGS) -o$@ -Wall -Werror -fPIC -c $<
