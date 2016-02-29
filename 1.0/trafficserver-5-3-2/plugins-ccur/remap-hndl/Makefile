@@ -5,7 +5,7 @@ all: remap-hndl.so
 CXX=g++
 # CXX=/opt/centos/devtoolset-1.1/root/usr/bin/c++
 
-CCFLAGS=-I../../lib -I../../proxy/api/ts -I../include \
+CCFLAGS=-I/usr/local/include/ts -I../include \
 	-D__STDC_FORMAT_MACROS -std=gnu++11
 
 remap-hndl.o: remap-hndl.cc ../include/ccur_remap.h
